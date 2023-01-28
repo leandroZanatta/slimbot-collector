@@ -1,5 +1,6 @@
 
 import { Query } from "expo-sqlite/build/SQLite.types";
+import { mapMetaDataToProperty } from "../../utilitarios/RepoPropertyMap";
 import { mapType } from "../types/DBTypes";
 import { IMetadataProps } from "../types/RepositoryTypes";
 
@@ -30,6 +31,14 @@ export abstract class MetaData<T> {
         }
 
         return columns.join(', \n');
+    }
+
+    public setId(value: any) {
+        this.setProperty(this.props.idProp, value);
+    }
+
+    public getValues(): T {
+        return mapMetaDataToProperty(this.props);
     }
 
     public getSelect(): Query {

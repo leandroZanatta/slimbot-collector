@@ -2,6 +2,13 @@ import { arrayToMap } from "../../../utilitarios/ArrayToMap";
 import { DBTypes } from "../../types/DBTypes";
 import { IMetadataProps } from '../../types/RepositoryTypes';
 
+export interface IFaucetCarteiraProps {
+    id: number;
+    carteira: string;
+    proximaExecucao: string;
+    saldoAtual: number;
+}
+
 export interface IFaucetProps {
     id: number;
     codigoCarteira: number;
@@ -12,6 +19,7 @@ export interface IFaucetProps {
 
 export const faucetMetaData: IMetadataProps = {
     table: "tb_faucet",
+    idProp: 'id',
     columns: arrayToMap('alias', [{
         alias: 'id',
         name: 'id_faucet',

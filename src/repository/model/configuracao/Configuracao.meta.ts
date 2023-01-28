@@ -8,10 +8,12 @@ export interface IConfiguracaoProps {
     descricao: string;
     email: string;
     senha: string;
+    senhaEmail: string;
 }
 
 export const configuracaoMetaData: IMetadataProps = {
     table: "tb_configuracao",
+    idProp: 'id',
     columns: arrayToMap('alias', [{
         alias: 'id',
         name: 'id_configuracao',

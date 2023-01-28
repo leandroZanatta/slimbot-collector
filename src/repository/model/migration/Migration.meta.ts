@@ -10,6 +10,7 @@ export interface IMigrationProps {
 
 export const migrationMetaData: IMetadataProps = {
     table: "tb_migration",
+    idProp: 'id',
     columns: arrayToMap('alias', [{
         alias: 'id',
         name: 'id_migration',

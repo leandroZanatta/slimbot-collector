@@ -12,12 +12,16 @@ class Migration extends MetaData<IMigrationProps> {
         return new Migration();
     }
 
-    public id(id: string) {
+    public id(id: string): Migration {
         this.setProperty('id', id);
+
+        return this;
     }
 
-    public execucao(execucao: Date) {
+    public execucao(execucao: Date): Migration {
         this.setProperty('execucao', moment(execucao).format("YYYY-MM-DD hh:mm:ss"));
+
+        return this;
     }
 
 }

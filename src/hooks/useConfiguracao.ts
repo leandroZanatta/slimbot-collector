@@ -1,26 +1,28 @@
-import { WebSQLDatabase } from 'expo-sqlite';
-import { useState } from 'react';
-import { IConfiguracaoProps } from '../repository/model/configuracao/Configuracao.meta';
-import ConfiguracaoService from '../service/ConfiguracaoService';
+import { IConfiguracaoProps } from "../repository/model/configuracao/Configuracao.meta";
+import { buscarConfiguracaoThunk, salvarConfiguracaoThunk } from "../store/thunk/ConfiguracaoThunk";
+import { useAppDispatch, useAppSelector } from "./redux";
+import { useDb } from "./useDb";
+
 
 export default function useConfiguracao() {
 
-    const [configuracao, setConfiguracao] = useState<IConfiguracaoProps | null>(null);
-    const [configurado, setConfigurado] = useState<number>(0);
+    const { db } = useDb();
+    const loading = useAppSelector((state: any) => state.ConfiguracaoSlice.loading);
+    const configuracao = useAppSelector((state: any) => state.ConfiguracaoSlice.configuracao);
+    const dispatch = useAppDispatch();
 
+    const buscarConfiguracao = () => {
+        dispatch(buscarConfiguracaoThunk(db));
+    }
 
-    const buscarConfiguracao = async (db: WebSQLDatabase) => {
-
-        const dados = await new ConfiguracaoService(db).buscarConfiguracao();
-
-        setConfiguracao(dados);
-
-        setConfigurado(dados == null ? 2 : 1);
+    const salvarConfiguracao = (configuracao: IConfiguracaoProps) => {
+        dispatch(salvarConfiguracaoThunk({ db, configuracao }));
     }
 
     return {
+        loading,
         configuracao,
-        configurado,
-        buscarConfiguracao
+        buscarConfiguracao,
+        salvarConfiguracao
     }
 }

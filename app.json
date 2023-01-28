@@ -21,10 +21,16 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "br.com.slimbot.collector",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       }
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#C2185B",
+      "trans lucent": false
     },
     "web": {
       "favicon": "./assets/favicon.png"

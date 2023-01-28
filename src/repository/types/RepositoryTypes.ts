@@ -7,7 +7,7 @@ export enum DBType {
     BOOLEAN
 }
 
-export interface IMigrationProps {
+export interface IMigrationQueryProps {
     name: string;
     query: Array<string>;
 };
@@ -30,6 +30,7 @@ export interface IColumnProps {
 
 export interface IMetadataProps {
     table: string;
+    idProp: string;
     columns: Map<string, IColumnProps>;
     customMetaData?: Array<string>;
 }

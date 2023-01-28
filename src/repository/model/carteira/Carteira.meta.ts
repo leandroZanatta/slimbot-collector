@@ -11,10 +11,13 @@ export interface ICarteiraProps {
     ativo: boolean;
     saldoResgate: number;
     registrado: boolean;
+    host: string;
+    refer: string;
 }
 
 export const carteiraMetaData: IMetadataProps = {
     table: "tb_carteira",
+    idProp: 'id',
     columns: arrayToMap('alias', [{
         alias: 'id',
         name: 'id_carteira',
@@ -55,5 +58,15 @@ export const carteiraMetaData: IMetadataProps = {
         name: 'fl_registrado',
         field: DBTypes.BOOLEAN,
         value: null
+    }, {
+        alias: 'host',
+        name: 'tx_host',
+        field: DBTypes.VARCHAR_100,
+        value: null,
+    }, {
+        alias: 'refer',
+        name: 'tx_refer',
+        field: DBTypes.VARCHAR_100,
+        value: null,
     }])
 }

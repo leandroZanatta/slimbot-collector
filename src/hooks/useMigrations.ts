@@ -1,16 +1,21 @@
-import { WebSQLDatabase } from "expo-sqlite/build/SQLite.types";
-import { IMigrationProps } from "../repository/types/RepositoryTypes";
-
-import MigrationService from "../service/MigrationService";
+import { migrateThunk } from "../store/thunk/MigrationThunk";
+import { useAppDispatch, useAppSelector } from "./redux";
+import { useDb } from "./useDb";
 
 export default function useMigration() {
 
-    const migrate = async (db: WebSQLDatabase, migrations: Array<IMigrationProps>) => {
+    const migrations = useAppSelector((state: any) => state.MigrationSlice.migrations);
+    const status = useAppSelector((state: any) => state.MigrationSlice.status);
+    const dispatch = useAppDispatch();
 
-        await new MigrationService(db).migrate(migrations);
+    const { db } = useDb();
+
+    const migrate = () => {
+        dispatch(migrateThunk({ db, migrations }));
     }
 
     return {
+        status,
         migrate
     }
 }
