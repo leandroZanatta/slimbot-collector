@@ -3,7 +3,6 @@ package br.com.slimbot.collector;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
-
 import androidx.annotation.NonNull;
 
 import com.facebook.react.PackageList;
@@ -13,13 +12,13 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
+import br.com.slimbot.collector.newarchitecture.MainApplicationReactNativeHost;
+
+import expo.modules.ApplicationLifecycleDispatcher;
+import expo.modules.ReactNativeHostWrapper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-
-import br.com.slimbot.collector.newarchitecture.MainApplicationReactNativeHost;
-import expo.modules.ApplicationLifecycleDispatcher;
-import expo.modules.ReactNativeHostWrapper;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost = new ReactNativeHostWrapper(
@@ -34,7 +33,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       @SuppressWarnings("UnnecessaryLocalVariable")
       List<ReactPackage> packages = new PackageList(this).getPackages();
-      packages.add(new CollectorPackage());
+      // Packages that cannot be autolinked yet can be added manually here, for example:
+      // packages.add(new MyReactNativePackage());
       return packages;
     }
 
@@ -59,6 +59,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    // If you opted-in for the New Architecture, we enable the TurboModule system
     ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
     SoLoader.init(this, /* native exopackage */ false);
 
