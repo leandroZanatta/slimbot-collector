@@ -4,9 +4,11 @@ import { IMetadataProps } from '../../types/RepositoryTypes';
 
 export interface IFaucetCarteiraProps {
     id: number;
+    codigoCarteira: number;
     carteira: string;
     proximaExecucao: string;
     saldoAtual: number;
+    percentual: number;
 }
 
 export interface IFaucetProps {

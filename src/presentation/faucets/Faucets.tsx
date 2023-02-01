@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Card, List, Text } from "react-native-paper";
+import { Button, Card, IconButton, List, MD3Colors, ProgressBar, Text, Tooltip } from "react-native-paper";
 import { ScrollView, View } from 'react-native';
 import HeaderComponent from "../components/Header";
 import useFaucet from "../../hooks/useFaucet";
@@ -37,8 +37,13 @@ const FaucetsScreen = () => {
             <HeaderComponent titulo="Carteiras" />
             <ScrollView >
                 {faucets.map((faucet: IFaucetCarteiraProps) =>
-                    <Card key={faucet.id}>
-                        <Card.Title title={faucet.carteira}></Card.Title>
+                    <Card mode="elevated" style={{ marginTop: 10, marginLeft: 10, marginRight: 10 }} key={faucet.id}>
+                        <Card.Content style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
+                            <Text style={{ flex: 1 }}>{faucet.carteira}</Text>
+                            <Tooltip title={`${faucet.percentual.toFixed(2)}%`}>
+                                <ProgressBar style={{ width: 80, height: 8 }} progress={faucet.percentual / 100.0} color='green' />
+                            </Tooltip>
+                        </Card.Content>
                         <Card.Content style={{ flexDirection: 'row', justifyContent: "space-around" }}>
                             <FaucetDisplay style={{ flex: 1, justifyContent: "flex-start" }} icon="wallet-outline" text={faucet.saldoAtual.toFixed(8)} />
                             <FaucetDisplay style={{ flex: 1, alignItems: "flex-end" }} icon="alarm-multiple" text={moment(faucet.proximaExecucao).format('HH:mm:ss')} />

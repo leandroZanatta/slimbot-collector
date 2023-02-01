@@ -15,7 +15,7 @@ public class CollectorEventService extends HeadlessJsTaskService {
     protected HeadlessJsTaskConfig getTaskConfig(Intent intent) {
         Bundle extras = intent.getExtras();
         return new HeadlessJsTaskConfig(
-                "SlimbotCollector",
+                "Collector",
                 extras != null ? Arguments.fromBundle(extras) : Arguments.createMap(),
                 5000,
                 true);

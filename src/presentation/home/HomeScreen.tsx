@@ -6,6 +6,9 @@ import ConfiguracaoCarteirasScreen from "../configuracao/ConfiguracaoCarteira";
 import useCarteira from "../../hooks/useCarteira";
 import useColetor from "../../hooks/useColetor";
 import FaucetsScreen from "../faucets/Faucets";
+import { NativeModules } from "react-native";
+
+
 
 const HomeScreen = () => {
 
@@ -17,6 +20,7 @@ const HomeScreen = () => {
     useEffect(() => { buscarCarteiras() }, []);
 
     useEffect(() => {
+
         if (carteiras.length > 0) {
             if (context) {
                 iniciarColeta(carteiras, context.executarComando);

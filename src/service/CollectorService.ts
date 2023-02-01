@@ -2,12 +2,15 @@ import axios from "axios";
 import { WebSQLDatabase } from "expo-sqlite";
 import moment from "moment";
 import { stringify } from "qs-native";
+import CarteiraRepository from "../repository/CarteiraRepository";
 import ExecucaoFaucetRepository from "../repository/ExecucaoFaucetRepository";
 import FaucetRepository from "../repository/FaucetRepository";
+import Carteira from "../repository/model/carteira/Carteira";
 import { ICarteiraProps } from "../repository/model/carteira/Carteira.meta";
 import { IConfiguracaoProps } from "../repository/model/configuracao/Configuracao.meta";
 import ExecucaoFaucet from "../repository/model/execucaofaucet/EcecucaoFaucet";
 import Faucet from "../repository/model/faucet/Faucet";
+import { IFaucetCarteiraProps } from "../repository/model/faucet/Faucet.meta";
 import { getRandomUserAgent } from "../utilitarios/CaptchaUtils";
 import CaptchaService from "./CaptchaService";
 import CookiesService from "./CookiesService";
@@ -46,106 +49,113 @@ export default class CollectorService {
         this.cookiesService = new CookiesService();
     }
 
-    public async collectFaucet(db: WebSQLDatabase, configuracoes: IConfiguracaoProps, carteiras: Array<ICarteiraProps>, executarComando: any) {
+    public async collectFaucet(db: WebSQLDatabase, configuracoes: IConfiguracaoProps, faucetCarteira: IFaucetCarteiraProps, executarComando: any) {
 
-        const carteirasValidas: Array<ICarteiraProps> = carteiras.filter(carteira => carteira.ativo);
+        console.log('Iniciando coleta de ' + faucetCarteira.carteira);
 
-        for (let i = 0; i < carteirasValidas.length; i++) {
-            await this.collect(db, configuracoes, carteirasValidas[i], executarComando)
-        }
+        const carteira: ICarteiraProps | null = await new CarteiraRepository(db).findFirst(Carteira.Builder().id(faucetCarteira.codigoCarteira));
 
-    }
+        if (carteira != null) {
 
-    public async collect(db: WebSQLDatabase, configuracoes: IConfiguracaoProps, carteira: ICarteiraProps, executarComando: any) {
-        console.log('Iniciando coleta de ' + carteira.descricao);
+            console.log(`${carteira.descricao} - Data de coleta: ${faucetCarteira.proximaExecucao}, Saldo atual da carteira: ${faucetCarteira.saldoAtual}`);
 
-        const faucetRepository = new FaucetRepository(db);
-        const execucaoFaucetRepository = new ExecucaoFaucetRepository(db);
+            const dadosPagina: DadosPaginaProps = await this.obterDadosPaginaInicial(carteira, configuracoes, executarComando);
 
-        await this.cookiesService.removecookiesStorage(carteira.host);
+            const faucetRepository = new FaucetRepository(db);
 
-        const faucetData = await faucetRepository.findFirst(Faucet.Builder().codigoCarteira(carteira.id));
+            if (dadosPagina.timeOut == 0) {
 
+                const dadosColeta: Array<DataCollector> = await this.executarRollsPendentes(carteira, dadosPagina, executarComando);
 
-        if (faucetData != null) {
+                if (dadosColeta.length > 0) {
 
-            console.log(`${carteira.descricao} - Data de coleta: ${faucetData.proximaExecucao}, Saldo atual da carteira: ${faucetData.saldoAtual}`);
+                    const execucaoFaucetRepository = new ExecucaoFaucetRepository(db);
 
-            if (moment(faucetData.proximaExecucao).isBefore(new Date())) {
-                console.log(`${carteira.descricao} - Executando Roll`);
+                    console.log(`${carteira.descricao} - Coletas: ${JSON.stringify(dadosColeta)}`);
 
-                let valid: boolean = false;
-                let dadosPagina: DadosPaginaProps | null = null;
-
-                while (!valid) {
-
-                    dadosPagina = await this.getHomePage(carteira.host);
-
-                    valid = dadosPagina.isLogged;
-
-                    if (!valid) {
-                        console.log(`${carteira.descricao} - Efetuando login`);
-
-                        await this.efetuarLogin(carteira.host, configuracoes, dadosPagina, executarComando);
-                    }
-                }
-
-                if (dadosPagina != null && dadosPagina.isLogged) {
-                    console.log(`${carteira.descricao} - Login efetuado`);
-
-                    if (dadosPagina.timeOut == 0) {
-                        console.log(`${carteira.descricao} - Rols pendentes: ${dadosPagina.numRols}`);
-
-                        const coletas: Array<DataCollector> = [];
-
-                        while (dadosPagina.numRols && dadosPagina.numRols != null && dadosPagina.numRols > 0) {
-
-                            var results = await this.efetuarRoll(carteira.host, 'whitelist', dadosPagina);
-
-                            if (!results.status && results.error) {
-
-                                if (results.error === 'captcha') {
-                                    console.log(`${carteira.descricao} - Resolvendo Captcha`);
-
-                                    const uuid: string | undefined = await this.captcha.doResolve({ host: carteira.host, siteKey: dadosPagina.siteKey, executarComando });
-
-                                    if (uuid) {
-                                        results = await this.efetuarRoll(carteira.host, uuid, dadosPagina);
-                                    }
-                                }
-                            }
-
-                            if (results.status) {
-                                dadosPagina.numRols = results.rollsPendentes;
-
-                                if (results.dadosColeta) {
-                                    coletas.push(results.dadosColeta);
-                                }
-                            }
-                        }
-
-                        if (coletas.length > 0) {
-                            console.log(`${carteira.descricao} - Coletas: ${JSON.stringify(coletas)}`);
-
-                            for (var c = 0; c < coletas.length; c++) {
-                                execucaoFaucetRepository.save(ExecucaoFaucet.Builder().codigoFaucet(faucetData.id).dataExecucao(new Date()).valorRoll(coletas[c].coinsGanhos));
-                            }
-
-                            const ultimaColeta = coletas[coletas.length - 1];
-
-                            faucetRepository.atualizarDadosFaucet(carteira.id, ultimaColeta.proximoRoll, ultimaColeta.totalBalanco);
-                        }
-
-                    } else if (dadosPagina.timeOut && dadosPagina.balance) {
-                        console.log(`${carteira.descricao} - Aguarde: ${dadosPagina.timeOut} segundos`);
-
-                        faucetRepository.atualizarDadosFaucet(carteira.id, new Date(new Date().getTime() + (dadosPagina.timeOut * 1000)), dadosPagina.balance);
+                    for (var c = 0; c < dadosColeta.length; c++) {
+                        execucaoFaucetRepository.save(ExecucaoFaucet.Builder().codigoFaucet(faucetCarteira.id).dataExecucao(new Date()).valorRoll(dadosColeta[c].coinsGanhos));
                     }
 
+                    const ultimaColeta = dadosColeta[dadosColeta.length - 1];
+
+                    faucetRepository.atualizarDadosFaucet(carteira.id, ultimaColeta.proximoRoll, ultimaColeta.totalBalanco);
                 }
+
+            } else if (dadosPagina.timeOut && dadosPagina.balance) {
+                console.log(`${carteira.descricao} - Aguarde: ${dadosPagina.timeOut} segundos`);
+
+                faucetRepository.atualizarDadosFaucet(carteira.id, new Date(new Date().getTime() + (dadosPagina.timeOut * 1000)), dadosPagina.balance);
             }
         }
     }
+
+
+    private async executarRollsPendentes(carteira: ICarteiraProps, dadosPagina: DadosPaginaProps, executarComando: any): Promise<Array<DataCollector>> {
+        console.log(`${carteira.descricao} - Rols pendentes: ${dadosPagina.numRols}`);
+
+        const coletas: Array<DataCollector> = [];
+
+        while (dadosPagina.numRols && dadosPagina.numRols != null && dadosPagina.numRols > 0) {
+
+            var results = await this.efetuarRoll(carteira.host, 'whitelist', dadosPagina);
+
+            if (!results.status && results.error) {
+
+                if (results.error === 'captcha') {
+                    console.log(`${carteira.descricao} - Resolvendo Captcha`);
+
+                    const uuid: string | undefined = await this.captcha.doResolve({ host: carteira.host, siteKey: dadosPagina.siteKey, executarComando });
+
+                    if (uuid) {
+                        results = await this.efetuarRoll(carteira.host, uuid, dadosPagina);
+                    }
+                }
+            }
+
+            if (results.status) {
+
+                dadosPagina.numRols = results.rollsPendentes;
+
+                if (results.dadosColeta) {
+                    coletas.push(results.dadosColeta);
+                }
+            }
+        }
+
+        return coletas;
+
+    }
+
+    private async obterDadosPaginaInicial(carteira: ICarteiraProps, configuracoes: IConfiguracaoProps, executarComando: any): Promise<DadosPaginaProps> {
+
+        while (true) {
+
+            const dadosPagina: DadosPaginaProps = await this.getHomePage(carteira.host);
+
+            if (dadosPagina.isLogged) {
+
+                return dadosPagina;
+            }
+
+            console.log(`${carteira.descricao} - Efetuando login`);
+
+            while (true) {
+
+                await this.efetuarLogin(carteira.host, configuracoes, dadosPagina, executarComando);
+
+                let paginaAutenticada: DadosPaginaProps = await this.getHomePage(carteira.host);
+
+                if (paginaAutenticada.isLogged) {
+
+                    return paginaAutenticada;
+                }
+            }
+        }
+
+    }
+
+
 
     private async efetuarLogin(host: string, dadosUsuario: IConfiguracaoProps, dadosPagina: DadosPaginaProps, executarComando: any): Promise<boolean> {
 
