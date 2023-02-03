@@ -101,7 +101,7 @@ export default class CaptchaService {
             answers: answers,
             serverdomain: captchaProps.host,
             sitekey: captchaProps.siteKey,
-            motionData: JSON.stringify(motionData(new Date().getTime())),
+            motionData: JSON.stringify(motionData()),
             c: JSON.stringify(siteConfig.c),
             n: hsl,
         }
@@ -113,6 +113,8 @@ export default class CaptchaService {
         headers.set("Referer", captchaProps.host);
 
         try {
+
+            console.log(captchaData);
 
             const { data } = await this.axiosHttp.post(`/checkcaptcha/${captchaProps.siteKey}/${task.key}`, captchaData, { headers });
 
@@ -160,7 +162,11 @@ export default class CaptchaService {
         headers.set("Origin", captchaProps.host);
         headers.set("Referer", captchaProps.host);
 
-        const { data } = await this.axiosHttp.post('/getcaptcha', stringify(captchaData), { headers });
+        const formEncoded: string = stringify(captchaData);
+
+        console.log(formEncoded)
+
+        const { data } = await this.axiosHttp.post('/getcaptcha', formEncoded, { headers });
 
         return await this.getTask(data);
     }
@@ -255,7 +261,17 @@ export default class CaptchaService {
 
     private async obterSiteConfig(captchaProps: CaptchaResolveProps) {
 
-        const { data } = await this.axiosHttp.post(`checksiteconfig?v=${this.version}&host=${captchaProps.host}&sitekey=${captchaProps.siteKey}&sc=1&swa=1$`);
+        debugger
+
+        const { data } = await axios({
+            method: 'POST',
+            url: `https://hcaptcha.com/checksiteconfig?v=${this.version}&host=${captchaProps.host}&sitekey=${captchaProps.siteKey}&sc=1&swa=1`,
+            headers: {
+                "Content-Type": "text/plain",
+                "Accept": "application/json"
+            },
+            data: null
+        });
 
         return data;
     }

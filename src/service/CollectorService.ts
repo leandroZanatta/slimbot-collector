@@ -1,6 +1,5 @@
 import axios from "axios";
 import { WebSQLDatabase } from "expo-sqlite";
-import moment from "moment";
 import { stringify } from "qs-native";
 import CarteiraRepository from "../repository/CarteiraRepository";
 import ExecucaoFaucetRepository from "../repository/ExecucaoFaucetRepository";
@@ -9,10 +8,8 @@ import Carteira from "../repository/model/carteira/Carteira";
 import { ICarteiraProps } from "../repository/model/carteira/Carteira.meta";
 import { IConfiguracaoProps } from "../repository/model/configuracao/Configuracao.meta";
 import ExecucaoFaucet from "../repository/model/execucaofaucet/EcecucaoFaucet";
-import Faucet from "../repository/model/faucet/Faucet";
 import { IFaucetCarteiraProps } from "../repository/model/faucet/Faucet.meta";
 import { getRandomUserAgent } from "../utilitarios/CaptchaUtils";
-import CaptchaService from "./CaptchaService";
 import CookiesService from "./CookiesService";
 
 interface DadosPaginaProps {
@@ -24,13 +21,11 @@ interface DadosPaginaProps {
     balance?: number;
 }
 
-
 interface DataCollector {
     proximoRoll: Date,
     coinsGanhos: number;
     totalBalanco: number;
 }
-
 
 interface ResultsCollector {
     status: boolean;
@@ -41,11 +36,9 @@ interface ResultsCollector {
 
 export default class CollectorService {
 
-    private captcha: CaptchaService;
     private cookiesService: CookiesService;
 
     constructor() {
-        this.captcha = new CaptchaService();
         this.cookiesService = new CookiesService();
     }
 
@@ -105,7 +98,7 @@ export default class CollectorService {
                 if (results.error === 'captcha') {
                     console.log(`${carteira.descricao} - Resolvendo Captcha`);
 
-                    const uuid: string | undefined = await this.captcha.doResolve({ host: carteira.host, siteKey: dadosPagina.siteKey, executarComando });
+                    const uuid: string = await this.obterCaptcha(carteira.host, dadosPagina.siteKey);
 
                     if (uuid) {
                         results = await this.efetuarRoll(carteira.host, uuid, dadosPagina);
@@ -155,13 +148,11 @@ export default class CollectorService {
 
     }
 
-
-
     private async efetuarLogin(host: string, dadosUsuario: IConfiguracaoProps, dadosPagina: DadosPaginaProps, executarComando: any): Promise<boolean> {
 
         await this.cookiesService.removecookiesStorage(host)
 
-        const uuid: string | undefined = await this.captcha.doResolve({ host, siteKey: dadosPagina.siteKey, executarComando });
+        const uuid: string = await this.obterCaptcha(host, dadosPagina.siteKey);
 
         if (uuid) {
 
@@ -283,7 +274,6 @@ export default class CollectorService {
             }
 
             if (ret.data.status) {
-                debugger
                 return {
                     status: ret.data.status,
                     rollsPendentes: ret.data.pending_rolls,
@@ -307,6 +297,20 @@ export default class CollectorService {
         }
     }
 
+    private async obterCaptcha(host: string, siteKey: string): Promise<string> {
+
+        const { data } = await axios({
+            method: 'POST',
+            url: 'http://192.168.1.150:3333/api/v1/captcha/resolver',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            data: { host, siteKey }
+        });
+
+        return data;
+    }
 
     private createHeaders(host: string): any {
 

@@ -40,9 +40,7 @@ const FaucetsScreen = () => {
                     <Card mode="elevated" style={{ marginTop: 10, marginLeft: 10, marginRight: 10 }} key={faucet.id}>
                         <Card.Content style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
                             <Text style={{ flex: 1 }}>{faucet.carteira}</Text>
-                            <Tooltip title={`${faucet.percentual.toFixed(2)}%`}>
-                                <ProgressBar style={{ width: 80, height: 8 }} progress={faucet.percentual / 100.0} color='green' />
-                            </Tooltip>
+                            <ProgressBar style={{ width: 80, height: 8 }} progress={faucet.percentual / 100.0} color='green' />
                         </Card.Content>
                         <Card.Content style={{ flexDirection: 'row', justifyContent: "space-around" }}>
                             <FaucetDisplay style={{ flex: 1, justifyContent: "flex-start" }} icon="wallet-outline" text={faucet.saldoAtual.toFixed(8)} />

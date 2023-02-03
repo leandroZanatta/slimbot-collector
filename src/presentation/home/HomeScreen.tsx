@@ -23,7 +23,7 @@ const HomeScreen = () => {
 
         if (carteiras.length > 0) {
             if (context) {
-                iniciarColeta(carteiras, context.executarComando);
+                iniciarColeta(context.executarComando);
             }
         }
     }, [carteiras])

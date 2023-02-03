@@ -7,7 +7,7 @@ export interface IInitialStateConfiguracao {
 }
 
 const initialState: IInitialStateConfiguracao = {
-  db: SQLite.openDatabase("app5.db", "1")
+  db: SQLite.openDatabase("app6.db", "1")
 };
 
 const slice = createSlice({
