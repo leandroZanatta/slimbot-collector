@@ -11,6 +11,12 @@ class Carteira extends MetaData<ICarteiraProps> {
         return new Carteira();
     }
 
+    public id(id: number | null): Carteira {
+        this.setProperty('id', id);
+        return this;
+    }
+
+
 }
 
 export default Carteira;

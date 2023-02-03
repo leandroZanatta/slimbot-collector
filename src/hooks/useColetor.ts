@@ -6,34 +6,38 @@ import useConfiguracao from "./useConfiguracao";
 import { useDb } from "./useDb";
 import { delay } from '../utilitarios/CaptchaUtils';
 import useFaucet from "./useFaucet";
+import { IFaucetCarteiraProps } from "../repository/model/faucet/Faucet.meta";
 
 export default function useColetor() {
 
     const { db } = useDb();
     const { configuracao } = useConfiguracao();
-    const { buscarFaucets } = useFaucet();
+    const { atualizarFaucet } = useFaucet();
 
-    const iniciarColeta = async (carteiras: Array<ICarteiraProps>, executarComando: any) => {
+    const iniciarColeta = async (executarComando: any) => {
 
         const collectorService: CollectorService = new CollectorService();
 
         while (true) {
 
-            await collectorService.collectFaucet(db, configuracao, carteiras, executarComando);
+            debugger
+            const faucetCarteira: IFaucetCarteiraProps = await new FaucetService(db).buscarFaucetCarteiraMenorTempo();
 
-            const faucetService: FaucetService = new FaucetService(db);
+            if (faucetCarteira != null) {
 
-            buscarFaucets();
+                const dif: number = moment(faucetCarteira.proximaExecucao).diff(new Date());
 
-            const dataExecucao: string = await faucetService.obterMenorDataExecucao();
+                if (dif > 0) {
 
-            const dif: number = moment(dataExecucao).diff(new Date());
+                    console.log(`aguardando ${dif / 1000} segundos para executar a carteira ${faucetCarteira.carteira}`);
 
-            if (dif > 0) {
+                    await delay(dif);
+                }
 
-                console.log(`aguardando ${dif / 1000} segundos para executar novamente`);
+                await collectorService.collectFaucet(db, configuracao, faucetCarteira, executarComando);
 
-                await delay(dif);
+                atualizarFaucet(faucetCarteira.id);
+
             }
         }
 
