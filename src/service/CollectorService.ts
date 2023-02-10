@@ -42,23 +42,23 @@ export default class CollectorService {
         this.cookiesService = new CookiesService();
     }
 
-    public async collectFaucet(db: WebSQLDatabase, configuracoes: IConfiguracaoProps, faucetCarteira: IFaucetCarteiraProps, executarComando: any) {
+    public async collectFaucet(db: WebSQLDatabase, configuracoes: IConfiguracaoProps, faucetCarteira: IFaucetCarteiraProps) {
 
         console.log('Iniciando coleta de ' + faucetCarteira.carteira);
 
         const carteira: ICarteiraProps | null = await new CarteiraRepository(db).findFirst(Carteira.Builder().id(faucetCarteira.codigoCarteira));
 
         if (carteira != null) {
-
+            debugger
             console.log(`${carteira.descricao} - Data de coleta: ${faucetCarteira.proximaExecucao}, Saldo atual da carteira: ${faucetCarteira.saldoAtual}`);
 
-            const dadosPagina: DadosPaginaProps = await this.obterDadosPaginaInicial(carteira, configuracoes, executarComando);
+            const dadosPagina: DadosPaginaProps = await this.obterDadosPaginaInicial(carteira, configuracoes);
 
             const faucetRepository = new FaucetRepository(db);
 
             if (dadosPagina.timeOut == 0) {
 
-                const dadosColeta: Array<DataCollector> = await this.executarRollsPendentes(carteira, dadosPagina, executarComando);
+                const dadosColeta: Array<DataCollector> = await this.executarRollsPendentes(carteira, dadosPagina);
 
                 if (dadosColeta.length > 0) {
 
@@ -84,7 +84,7 @@ export default class CollectorService {
     }
 
 
-    private async executarRollsPendentes(carteira: ICarteiraProps, dadosPagina: DadosPaginaProps, executarComando: any): Promise<Array<DataCollector>> {
+    private async executarRollsPendentes(carteira: ICarteiraProps, dadosPagina: DadosPaginaProps): Promise<Array<DataCollector>> {
         console.log(`${carteira.descricao} - Rols pendentes: ${dadosPagina.numRols}`);
 
         const coletas: Array<DataCollector> = [];
@@ -120,7 +120,7 @@ export default class CollectorService {
 
     }
 
-    private async obterDadosPaginaInicial(carteira: ICarteiraProps, configuracoes: IConfiguracaoProps, executarComando: any): Promise<DadosPaginaProps> {
+    private async obterDadosPaginaInicial(carteira: ICarteiraProps, configuracoes: IConfiguracaoProps): Promise<DadosPaginaProps> {
 
         while (true) {
 
@@ -135,7 +135,7 @@ export default class CollectorService {
 
             while (true) {
 
-                await this.efetuarLogin(carteira.host, configuracoes, dadosPagina, executarComando);
+                await this.efetuarLogin(carteira.host, configuracoes, dadosPagina);
 
                 let paginaAutenticada: DadosPaginaProps = await this.getHomePage(carteira.host);
 
@@ -148,7 +148,7 @@ export default class CollectorService {
 
     }
 
-    private async efetuarLogin(host: string, dadosUsuario: IConfiguracaoProps, dadosPagina: DadosPaginaProps, executarComando: any): Promise<boolean> {
+    private async efetuarLogin(host: string, dadosUsuario: IConfiguracaoProps, dadosPagina: DadosPaginaProps): Promise<boolean> {
 
         await this.cookiesService.removecookiesStorage(host)
 
@@ -298,18 +298,23 @@ export default class CollectorService {
     }
 
     private async obterCaptcha(host: string, siteKey: string): Promise<string> {
+        try {
+            const { data } = await axios({
+                method: 'POST',
+                url: 'http://ec2-54-144-137-196.compute-1.amazonaws.com:80/api/v1/captcha/resolver',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                data: { host, siteKey }
+            });
 
-        const { data } = await axios({
-            method: 'POST',
-            url: 'http://192.168.1.150:3333/api/v1/captcha/resolver',
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            data: { host, siteKey }
-        });
+            return data;
 
-        return data;
+        } catch (error) {
+            debugger
+            return '';
+        }
     }
 
     private createHeaders(host: string): any {

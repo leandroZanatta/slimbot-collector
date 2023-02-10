@@ -14,13 +14,11 @@ export default function useColetor() {
     const { configuracao } = useConfiguracao();
     const { atualizarFaucet } = useFaucet();
 
-    const iniciarColeta = async (executarComando: any) => {
+    const iniciarColeta = async () => {
 
         const collectorService: CollectorService = new CollectorService();
 
         while (true) {
-
-            debugger
             const faucetCarteira: IFaucetCarteiraProps = await new FaucetService(db).buscarFaucetCarteiraMenorTempo();
 
             if (faucetCarteira != null) {
@@ -34,7 +32,7 @@ export default function useColetor() {
                     await delay(dif);
                 }
 
-                await collectorService.collectFaucet(db, configuracao, faucetCarteira, executarComando);
+                await collectorService.collectFaucet(db, configuracao, faucetCarteira);
 
                 atualizarFaucet(faucetCarteira.id);
 
