@@ -8,27 +8,21 @@ import java.util.Date;
 import java.util.Locale;
 
 public class Faucet {
-
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
     private int codigoFaucet;
     private String carteira;
     private String host;
     private String dataExecucao;
     private Double saldoAtual;
-
-    private String hcaptchaHost;
-
     public Faucet() {
 
     }
-
-    public Faucet(int codigoFaucet, String carteira, String host, String dataExecucao, Double saldoAtual,String hcaptchaHost) {
+    public Faucet(int codigoFaucet, String carteira, String host, String dataExecucao, Double saldoAtual) {
         this.codigoFaucet = codigoFaucet;
         this.carteira = carteira;
         this.host = host;
         this.dataExecucao = dataExecucao;
         this.saldoAtual = saldoAtual;
-        this.setHcaptchaHost(hcaptchaHost);
     }
 
     public int getCodigoFaucet() {
@@ -82,13 +76,5 @@ public class Faucet {
     @Override
     public String toString() {
         return String.format("{codigoFaucet: %s, carteira:%s, host:%s, dataExecucao:%s, saldoAtual:%s}", codigoFaucet, carteira, host, dataExecucao, saldoAtual);
-    }
-
-    public String getHcaptchaHost() {
-        return hcaptchaHost;
-    }
-
-    public void setHcaptchaHost(String hcaptchaHost) {
-        this.hcaptchaHost = hcaptchaHost;
     }
 }

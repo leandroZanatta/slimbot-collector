@@ -1,5 +1,7 @@
 package br.com.slimbot.collector.vo;
 
+import java.math.BigDecimal;
+
 public class DadosPaginaVO {
 
     private boolean isLogged;
@@ -7,8 +9,9 @@ public class DadosPaginaVO {
     private String siteKey;
     private int timeOut;
     private int numRolls;
-    private Double balance;
+    private BigDecimal balance;
 
+    private boolean captcha;
 
     public boolean isLogged() {
         return isLogged;
@@ -50,11 +53,20 @@ public class DadosPaginaVO {
         this.numRolls = numRolls;
     }
 
-    public Double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(Double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
+    }
+
+
+    public boolean isCaptcha() {
+        return captcha;
+    }
+
+    public void setCaptcha(boolean captcha) {
+        this.captcha = captcha;
     }
 }

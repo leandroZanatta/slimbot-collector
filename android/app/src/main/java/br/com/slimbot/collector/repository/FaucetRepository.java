@@ -28,7 +28,7 @@ public class FaucetRepository extends AbstractRepository {
             faucet.setHost((String) conf[2]);
             faucet.setDataExecucao((String) conf[3]);
             faucet.setSaldoAtual(Double.valueOf(conf[4].toString()));
-            faucet.setHcaptchaHost("http://192.168.1.150:3333");
+
             faucets.add(faucet);
         }
         return faucets;

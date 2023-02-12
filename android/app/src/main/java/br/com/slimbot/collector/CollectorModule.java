@@ -26,7 +26,7 @@ public class CollectorModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void startService() {
-        File pastaSqlite=  new File( this.reactContext.getFilesDir().getAbsolutePath()+File.separator+"SQLite","app5.db");
+        File pastaSqlite=  new File( this.reactContext.getFilesDir().getAbsolutePath()+File.separator+"SQLite","collector.db");
 
         Intent intent=     new Intent(this.reactContext, CollectorService.class);
         intent.putExtra("dbPath",pastaSqlite.getAbsolutePath());

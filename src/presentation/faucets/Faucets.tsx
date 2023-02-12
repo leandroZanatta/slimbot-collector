@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Card, IconButton, List, MD3Colors, ProgressBar, Text, Tooltip } from "react-native-paper";
+import { Card, List, ProgressBar, Text, Tooltip } from "react-native-paper";
 import { ScrollView, View } from 'react-native';
 import HeaderComponent from "../components/Header";
 import useFaucet from "../../hooks/useFaucet";

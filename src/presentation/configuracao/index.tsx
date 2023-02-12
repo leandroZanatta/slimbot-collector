@@ -4,12 +4,12 @@ import ConfiguracaoCarteirasScreen from "./ConfiguracaoCarteira";
 
 const Configuracao = () => {
 
-    const { configurado } = useConfiguracao();
+    const { configuracao } = useConfiguracao();
 
 
     return (
         <>
-            {configurado === 1 ? <ConfiguracaoCarteirasScreen /> : <ConfiguracaoBasicaScreen />}
+            {configuracao === 1 ? <ConfiguracaoCarteirasScreen /> : <ConfiguracaoBasicaScreen />}
         </>
     );
 

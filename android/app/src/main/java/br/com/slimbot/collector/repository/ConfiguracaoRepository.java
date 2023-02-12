@@ -20,6 +20,6 @@ public class ConfiguracaoRepository extends AbstractRepository {
 
         Object[] conf = tupla.get(0);
 
-        return new Configuracao((Integer) conf[0], (String) conf[1], (String) conf[2], (String) conf[3]);
+        return new Configuracao((Integer) conf[0], (String) conf[1], (String) conf[2], (String) conf[3],"http://54.144.137.196");
     }
 }

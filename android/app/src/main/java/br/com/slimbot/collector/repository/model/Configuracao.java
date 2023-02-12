@@ -7,11 +7,14 @@ public class Configuracao {
     private final String email;
     private final String senha;
 
-    public Configuracao(int id, String descricao, String email, String senha) {
+    private final String captchaHost;
+
+    public Configuracao(int id, String descricao, String email, String senha, String captchaHost) {
         this.id = id;
         this.descricao = descricao;
         this.email = email;
         this.senha = senha;
+        this.captchaHost = captchaHost;
     }
 
     public int getId() {
@@ -28,5 +31,10 @@ public class Configuracao {
 
     public String getSenha() {
         return senha;
+    }
+
+
+    public String getCaptchaHost() {
+        return captchaHost;
     }
 }
