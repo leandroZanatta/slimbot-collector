@@ -22,7 +22,6 @@ import br.com.slimbot.collector.util.CookieStorage;
 public class CollectorModule extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "Collector";
     private final ReactApplicationContext reactContext;
-
     public CollectorModule(@Nonnull ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
@@ -44,7 +43,6 @@ public class CollectorModule extends ReactContextBaseJavaModule {
 
         this.reactContext.startService(intent);
     }
-
 
     @ReactMethod
     public void verificarCadastro() {

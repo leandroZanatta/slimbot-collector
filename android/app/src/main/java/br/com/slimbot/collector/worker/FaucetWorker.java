@@ -76,7 +76,6 @@ public class FaucetWorker implements Runnable {
                 FaucetRepository faucetRepository = new FaucetRepository(this.dbPath);
                 List<FaucetProjection> faucetsSalvos = faucetRepository.obterFaucetExecucao();
 
-
                 for (FaucetProjection faucetProjection : faucetsSalvos) {
                     if (faucetProjection.getDataExecucao().before(dataAtual)) {
                         faucetsExecutar.add(faucetProjection);

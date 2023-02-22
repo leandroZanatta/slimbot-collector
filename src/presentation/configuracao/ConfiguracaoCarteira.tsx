@@ -6,6 +6,7 @@ import HeaderComponent from "../components/Header";
 import { ScrollView, View } from 'react-native';
 import useModuloNativo from "../../hooks/useModuloNativo";
 import ModalAutorizarRegistro from "./ModalAutorizarRegistro";
+import PTRView from 'react-native-pull-to-refresh';
 
 interface IcarteiraPanelProps {
     carteira: ICarteiraProps
@@ -41,20 +42,22 @@ const ConfiguracaoCarteirasScreen = () => {
         <>
             <HeaderComponent titulo="Configuração de Carteiras" />
             <Provider>
-                <ScrollView >
-                    {
-                        carteiras.map((carteira: ICarteiraProps) =>
-                            <CarteiraPanel key={carteira.id} carteira={carteira} />)
-                    }
-                    <View>
+                <PTRView onRefresh={buscarCarteiras}>
+                    <ScrollView >
                         {
-                            carteiras.filter((carteira: ICarteiraProps) => carteira.situacao === -1).length > 0 &&
-                            <Button mode="contained" onPress={e => verificarUsuarioCadastrado()}>Verificar</Button>
+                            carteiras.map((carteira: ICarteiraProps) =>
+                                <CarteiraPanel key={carteira.id} carteira={carteira} />)
                         }
-                    </View>
+                        <View>
+                            {
+                                carteiras.filter((carteira: ICarteiraProps) => carteira.situacao === -1).length > 0 &&
+                                <Button mode="contained" onPress={e => verificarUsuarioCadastrado()}>Verificar</Button>
+                            }
+                        </View>
 
-                </ScrollView>
-            </Provider>
+                    </ScrollView>
+                </PTRView>
+            </Provider >
         </>
     )
 }
