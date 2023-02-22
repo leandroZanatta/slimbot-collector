@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.concurrent.TimeUnit;
 
 import br.com.slimbot.collector.vo.CaptchaDataVO;
 import br.com.slimbot.collector.vo.CaptchaPropsVO;
@@ -20,8 +21,8 @@ import okhttp3.Response;
 
 public class CaptchaService {
 
-    private OkHttpClient client = new OkHttpClient().newBuilder().build();
-
+    private OkHttpClient client =new OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS).readTimeout(60, TimeUnit.SECONDS).build();;
     public String resolverCaptcha(CaptchaPropsVO captchaPropsVO) throws IOException {
 
         MediaType mediaType = MediaType.parse("application/json");

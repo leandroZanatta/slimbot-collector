@@ -12,6 +12,11 @@ import android.os.IBinder;
 
 import androidx.core.app.NotificationCompat;
 
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactNativeHost;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,6 +26,8 @@ public class CollectorService extends Service {
     private static final int SERVICE_NOTIFICATION_ID = 54321;
     private static final String CHANNEL_ID = "Collector";
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private boolean started = false;
+
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -56,9 +63,25 @@ public class CollectorService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        if (started) {
+            return START_STICKY;
+        }
+
         Bundle bundle = intent.getExtras();
 
-        executor.submit(new FaucetWorker(bundle.getString("dbPath")));
+        MainApplication application = (MainApplication) this.getApplication();
+
+        ReactNativeHost reactNativeHost = application.getReactNativeHost();
+        ReactInstanceManager reactInstanceManager = reactNativeHost.getReactInstanceManager();
+        ReactContext reactContext = reactInstanceManager.getCurrentReactContext();
+        DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter = null;
+
+        if (reactContext != null) {
+            eventEmitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+        }
+
+        executor.submit(new FaucetWorker(bundle.getString("dbPath"), eventEmitter));
 
         createNotificationChannel();
 
@@ -68,11 +91,14 @@ public class CollectorService extends Service {
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Collector")
+                .setContentText("Inicializando Coletor")
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(contentIntent)
                 .setOngoing(true)
                 .build();
         startForeground(SERVICE_NOTIFICATION_ID, notification);
+
+        this.started = true;
 
         return START_STICKY;
     }

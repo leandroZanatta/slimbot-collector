@@ -1,4 +1,4 @@
-export const motionData = (timestamp: number): any => {
+export const motionData = (): any => {
 
     return {
         "st": 1674610364922,

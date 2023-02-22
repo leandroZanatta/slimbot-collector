@@ -10,7 +10,7 @@ export interface ICarteiraProps {
     tipo: number;
     ativo: boolean;
     saldoResgate: number;
-    registrado: boolean;
+    situacao: number; //0 - NAO-VALIDADA, 1 - REGISTRADA, 2 - JA_REGISTRADO, 3 - VALIDADO, 4 - ERRO_AUTENTICACAO
     host: string;
     refer: string;
 }
@@ -54,9 +54,9 @@ export const carteiraMetaData: IMetadataProps = {
         value: null,
         notNull: true
     }, {
-        alias: 'registrado',
-        name: 'fl_registrado',
-        field: DBTypes.BOOLEAN,
+        alias: 'situacao',
+        name: 'fl_situacao',
+        field: DBTypes.NUMERIC_3_0,
         value: null
     }, {
         alias: 'host',

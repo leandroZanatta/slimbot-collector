@@ -38,8 +38,5 @@
             android:enabled="true"
             android:exported="false" >
     </service>
-    <service
-            android:name="br.com.slimbot.collector.CollectorEventService">
-    </service>
   </application>
 </manifest>

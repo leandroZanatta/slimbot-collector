@@ -16,12 +16,11 @@ public abstract class AbstractRepository {
     private static final int FIELD_TYPE_NULL = 0;
     private static final int FIELD_TYPE_STRING = 3;
 
-    private final String dbPath;
+    protected final String dbPath;
 
     public AbstractRepository(String dbPath) {
         this.dbPath = dbPath;
     }
-
     protected synchronized List<Object[]> executeQuery(String query) {
 
         SQLiteDatabase checkDB = null;

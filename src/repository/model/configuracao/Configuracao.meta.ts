@@ -8,7 +8,6 @@ export interface IConfiguracaoProps {
     descricao: string;
     email: string;
     senha: string;
-    senhaEmail: string;
 }
 
 export const configuracaoMetaData: IMetadataProps = {

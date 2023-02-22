@@ -2,66 +2,63 @@ package br.com.slimbot.collector.repository.model;
 
 import androidx.annotation.NonNull;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class Faucet {
-    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
-    private int codigoFaucet;
-    private String carteira;
-    private String host;
-    private String dataExecucao;
+
+    private Integer id;
+    private int codigoCarteira;
+    private int codigoUsuario;
+    private String proximaExecucao;
     private Double saldoAtual;
+
     public Faucet() {
 
     }
-    public Faucet(int codigoFaucet, String carteira, String host, String dataExecucao, Double saldoAtual) {
-        this.codigoFaucet = codigoFaucet;
-        this.carteira = carteira;
-        this.host = host;
-        this.dataExecucao = dataExecucao;
-        this.saldoAtual = saldoAtual;
+
+    public Faucet(Integer id, int codigoCarteira, int codigoUsuario, String proximaExecucao, Double saldoAtual) {
+        this.setId(id);
+        this.setCodigoCarteira(codigoCarteira);
+        this.setCodigoUsuario(codigoUsuario);
+        this.setProximaExecucao(proximaExecucao);
+        this.setSaldoAtual(saldoAtual);
     }
 
-    public int getCodigoFaucet() {
-        return codigoFaucet;
+    @NonNull
+    @Override
+    public String toString() {
+        return String.format("{id: %s, codigoCarteira: %s, codigoUsuario:%s, proximaExecucao:%s, saldoAtual:%s}", getId(), getCodigoCarteira(), getCodigoUsuario(), getProximaExecucao(), getSaldoAtual());
     }
 
-    public void setCodigoFaucet(int codigoFaucet) {
-        this.codigoFaucet = codigoFaucet;
+
+    public Integer getId() {
+        return id;
     }
 
-    public String getCarteira() {
-        return carteira;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public void setCarteira(String carteira) {
-        this.carteira = carteira;
+    public int getCodigoCarteira() {
+        return codigoCarteira;
     }
 
-    public String getHost() {
-        return host;
+    public void setCodigoCarteira(int codigoCarteira) {
+        this.codigoCarteira = codigoCarteira;
     }
 
-    public void setHost(String host) {
-        this.host = host;
+    public int getCodigoUsuario() {
+        return codigoUsuario;
     }
 
-    public Date getDataExecucao() {
-        try {
-            return sdf.parse(dataExecucao);
-        } catch (ParseException e) {
-
-            e.printStackTrace();
-
-            return null;
-        }
+    public void setCodigoUsuario(int codigoUsuario) {
+        this.codigoUsuario = codigoUsuario;
     }
 
-    public void setDataExecucao(String dataExecucao) {
-        this.dataExecucao = dataExecucao;
+    public String getProximaExecucao() {
+        return proximaExecucao;
+    }
+
+    public void setProximaExecucao(String proximaExecucao) {
+        this.proximaExecucao = proximaExecucao;
     }
 
     public Double getSaldoAtual() {
@@ -70,11 +67,5 @@ public class Faucet {
 
     public void setSaldoAtual(Double saldoAtual) {
         this.saldoAtual = saldoAtual;
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        return String.format("{codigoFaucet: %s, carteira:%s, host:%s, dataExecucao:%s, saldoAtual:%s}", codigoFaucet, carteira, host, dataExecucao, saldoAtual);
     }
 }

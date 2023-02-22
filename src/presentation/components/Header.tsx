@@ -1,5 +1,6 @@
 import React from "react";
 import { Text } from "react-native-paper";
+import { View } from "react-native";
 
 interface IHeaderProps {
     titulo: string;
@@ -8,7 +9,9 @@ interface IHeaderProps {
 const HeaderComponent = ({ titulo }: IHeaderProps) => {
 
     return (
-        <Text>{titulo}</Text>
+        <View style={{ height: 45, backgroundColor: '#C2185B', justifyContent: "center", alignItems: 'center' }}>
+            <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>{titulo.toUpperCase()}</Text>
+        </View>
     )
 }
 

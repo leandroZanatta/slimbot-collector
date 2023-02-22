@@ -1,5 +1,9 @@
 package br.com.slimbot.collector.util;
 
+import android.util.Log;
+
+import com.google.gson.Gson;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,49 +18,10 @@ import java.util.Map;
 
 public class CookieStorage {
 
-    private static File cookiesFile = new File("cookies.json");
+    private final static String LOG_TAG = "CookieStorage";
+    private static File cookiesFile;
+    private static Map<Integer, Map<String, String>> cookies = new HashMap<>();
 
-    private static Map<Integer, Map<String, String>> cookies;
-
-    static {
-        if (!cookiesFile.exists()) {
-
-            cookies = new HashMap<>();
-
-            storeCookies();
-
-        } else {
-
-            cookies = new HashMap<>();
-
-            try {
-
-                JSONObject jsonObject = new JSONObject(FileUtils.readFileToString(cookiesFile, StandardCharsets.UTF_8));
-                Iterator<String> faucets = jsonObject.keys();
-
-                while (faucets.hasNext()) {
-					Integer faucet =Integer.valueOf( faucets.next());
-
-					cookies.put(faucet, new HashMap<>());
-
-					JSONObject cookiesObject = jsonObject.getJSONObject(faucet.toString());
-
-					Iterator<String> cookieKeys = cookiesObject.keys();
-
-					while (cookieKeys.hasNext()) {
-
-						String cookie = cookieKeys.next();
-
-						cookies.get(faucet).put(cookie,cookiesObject.getString(cookie));
-					}
-				}
-
-            } catch (IOException | JSONException e) {
-
-                storeCookies();
-            }
-        }
-    }
 
     public static void setCookiesStorage(Integer faucet, List<String> cookiesSite) {
 
@@ -96,10 +61,61 @@ public class CookieStorage {
 
         try {
 
-            FileUtils.writeStringToFile(cookiesFile, new JSONObject(cookies).toString(), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(cookiesFile, new Gson().toJson(cookies), StandardCharsets.UTF_8);
 
         } catch (IOException e) {
         }
     }
 
+    public static void defineLocalPath(File folder) {
+        if (cookiesFile == null) {
+            cookiesFile = new File(folder, "cookies.json");
+
+            Log.i(LOG_TAG, "Obtendo configuração de cookies: " + cookiesFile.getAbsolutePath());
+
+            if (!cookiesFile.exists()) {
+                Log.i(LOG_TAG, "Configuração de cookies inexistente");
+
+                cookies = new HashMap<>();
+
+                storeCookies();
+
+            } else {
+
+                cookies = new HashMap<>();
+
+                try {
+
+                    String cookiesData = FileUtils.readFileToString(cookiesFile, StandardCharsets.UTF_8);
+
+                    Log.i(LOG_TAG, cookiesData);
+
+                    JSONObject jsonObject = new JSONObject(cookiesData);
+
+                    Iterator<String> faucets = jsonObject.keys();
+
+                    while (faucets.hasNext()) {
+                        Integer faucet = Integer.valueOf(faucets.next());
+
+                        cookies.put(faucet, new HashMap<>());
+
+                        JSONObject cookiesObject = jsonObject.getJSONObject(faucet.toString());
+
+                        Iterator<String> cookieKeys = cookiesObject.keys();
+
+                        while (cookieKeys.hasNext()) {
+
+                            String cookie = cookieKeys.next();
+
+                            cookies.get(faucet).put(cookie, cookiesObject.getString(cookie));
+                        }
+                    }
+
+                } catch (IOException | JSONException e) {
+
+                    storeCookies();
+                }
+            }
+        }
+    }
 }

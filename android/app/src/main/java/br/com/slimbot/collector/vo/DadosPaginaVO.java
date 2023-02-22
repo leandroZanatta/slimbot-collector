@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 public class DadosPaginaVO {
 
     private boolean isLogged;
+
+    private boolean emailValid;
     private String crsfToken;
     private String siteKey;
     private int timeOut;
@@ -68,5 +70,14 @@ public class DadosPaginaVO {
 
     public void setCaptcha(boolean captcha) {
         this.captcha = captcha;
+    }
+
+
+    public boolean isEmailValid() {
+        return emailValid;
+    }
+
+    public void setEmailValid(boolean emailValid) {
+        this.emailValid = emailValid;
     }
 }
