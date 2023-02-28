@@ -68,7 +68,7 @@ public class CarteiraRepository extends AbstractRepository {
 
     public List<Carteira> obterCarteirasInativas() {
 
-        List<Object[]> tupla = super.executeQuery("select carteira.id_carteira, carteira.tx_descricao, carteira.fl_ativo, carteira.fl_situacao, carteira.tx_refer  from tb_carteira carteira where carteira.fl_situacao <> 2");
+        List<Object[]> tupla = super.executeQuery("select carteira.id_carteira, carteira.tx_descricao, carteira.fl_ativo, carteira.fl_situacao, carteira.tx_refer  from tb_carteira carteira where carteira.fl_ativo = false and fl_situacao <> 3 ");
         List<Carteira> carteiras = new ArrayList<>();
 
         if (tupla.isEmpty()) {

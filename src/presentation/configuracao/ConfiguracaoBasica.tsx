@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import useConfiguracao from "../../hooks/useConfiguracao";
 import { IConfiguracaoProps } from "../../repository/model/configuracao/Configuracao.meta";
-import { Button, TextInput } from "react-native-paper";
+import { Button, TextInput, Switch, Text } from "react-native-paper";
 import { ScrollView, View } from 'react-native';
 import HeaderComponent from "../components/Header";
 import Toast from "@phamhuuan/react-native-toast-message";
 
-interface IConfiguracaoFormProps {
+export interface IConfiguracaoFormProps {
     id: number | null;
     descricao: string;
     email: string;
     senha: string;
     repetirSenha: string;
+    usuarioRegistrado: boolean;
 }
 
 const initialData: IConfiguracaoFormProps = {
@@ -20,6 +21,7 @@ const initialData: IConfiguracaoFormProps = {
     email: '',
     senha: '',
     repetirSenha: '',
+    usuarioRegistrado: false
 }
 
 const ConfiguracaoBasicaScreen = () => {
@@ -32,7 +34,7 @@ const ConfiguracaoBasicaScreen = () => {
     const salvar = () => {
 
         if (isValid()) {
-            salvarConfiguracao(form as IConfiguracaoProps);
+            salvarConfiguracao(form);
         }
     }
 
@@ -90,6 +92,10 @@ const ConfiguracaoBasicaScreen = () => {
                         mode="outlined"
                     />
 
+                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: "flex-end", alignItems: 'center', marginTop: 10 }}>
+                        <Text>Usuário cadastrado</Text>
+                        <Switch value={form.usuarioRegistrado} onValueChange={e => changeValue('usuarioRegistrado', !form.usuarioRegistrado)} />
+                    </View>
                     <Button style={{ marginTop: 50 }} mode="contained" onPress={salvar}>Salvar</Button>
                 </View>
 

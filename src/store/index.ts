@@ -4,6 +4,7 @@ import ConfiguracaoSlice from "./slices/ConfiguracaoSlice";
 import MigrationSlice from "./slices/MigrationSlice";
 import CarteiraSlice from "./slices/CarteiraSlice";
 import FaucetSlice from "./slices/FaucetSlice";
+import CotacaoAtivoSlice from "./slices/CotacaoAtivoSlice";
 
 const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ const store = configureStore({
     ConfiguracaoSlice,
     MigrationSlice,
     CarteiraSlice,
-    FaucetSlice
+    FaucetSlice,
+    CotacaoAtivoSlice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

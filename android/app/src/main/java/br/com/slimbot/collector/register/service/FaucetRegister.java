@@ -1,4 +1,4 @@
-package br.com.slimbot.collector.service;
+package br.com.slimbot.collector.register.service;
 
 import android.util.Log;
 

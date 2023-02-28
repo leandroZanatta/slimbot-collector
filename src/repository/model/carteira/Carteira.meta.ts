@@ -1,11 +1,11 @@
 import { arrayToMap } from "../../../utilitarios/ArrayToMap";
 import { DBTypes } from "../../types/DBTypes";
-
 import { IMetadataProps } from '../../types/RepositoryTypes';
 
 export interface ICarteiraProps {
     id: number;
     descricao: string;
+    uuid: string;
     carteira: string;
     tipo: number;
     ativo: boolean;
@@ -30,6 +30,11 @@ export const carteiraMetaData: IMetadataProps = {
         field: DBTypes.VARCHAR_100,
         value: null,
         notNull: true
+    }, {
+        alias: 'uuid',
+        name: 'tx_uuid',
+        field: DBTypes.VARCHAR_100,
+        value: null,
     }, {
         alias: 'carteira',
         name: 'tx_carteira',

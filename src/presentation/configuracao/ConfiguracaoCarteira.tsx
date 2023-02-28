@@ -42,19 +42,16 @@ const ConfiguracaoCarteirasScreen = () => {
         <>
             <HeaderComponent titulo="Configuração de Carteiras" />
             <Provider>
+                {
+                    carteiras.filter((carteira: ICarteiraProps) => carteira.situacao !== 3 && !carteira.ativo).length > 0 &&
+                    <Button onPress={verificarUsuarioCadastrado}>Verificar Contas</Button>
+                }
                 <PTRView onRefresh={buscarCarteiras}>
                     <ScrollView >
                         {
                             carteiras.map((carteira: ICarteiraProps) =>
                                 <CarteiraPanel key={carteira.id} carteira={carteira} />)
                         }
-                        <View>
-                            {
-                                carteiras.filter((carteira: ICarteiraProps) => carteira.situacao === -1).length > 0 &&
-                                <Button mode="contained" onPress={e => verificarUsuarioCadastrado()}>Verificar</Button>
-                            }
-                        </View>
-
                     </ScrollView>
                 </PTRView>
             </Provider >

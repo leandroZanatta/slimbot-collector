@@ -1,4 +1,4 @@
-package br.com.slimbot.collector.service;
+package br.com.slimbot.collector.job.service;
 
 import android.util.Log;
 
@@ -10,13 +10,14 @@ import java.util.List;
 
 import br.com.slimbot.collector.repository.model.Configuracao;
 import br.com.slimbot.collector.repository.projection.FaucetProjection;
+import br.com.slimbot.collector.register.service.CaptchaService;
+import br.com.slimbot.collector.register.service.FaucetApiClient;
 import br.com.slimbot.collector.vo.CaptchaPropsVO;
 import br.com.slimbot.collector.vo.DadosPaginaVO;
 import br.com.slimbot.collector.vo.ResultadoColetasVO;
 import br.com.slimbot.collector.vo.ResultsCollectorVO;
 
 public class FaucetCollector {
-
     private final static String LOG_TAG = "FaucetCollector";
     private final FaucetProjection faucetProjection;
     private final Configuracao configuracao;

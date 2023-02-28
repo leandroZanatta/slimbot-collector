@@ -281,7 +281,7 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation "com.google.code.gson:gson:2.9.0"
 	
-	def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
+    def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
     def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
     def frescoVersion = rootProject.ext.frescoVersion
@@ -326,10 +326,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-}
-
-repositories {
-	 maven { url 'https://jitpack.io' }
 }
 
 if (isNewArchitectureEnabled()) {

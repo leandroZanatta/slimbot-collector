@@ -15,11 +15,11 @@ export default class CarteiraRepository extends AbstractRepository<ICarteiraProp
     }
 
 
-    public async atualizarSituacaoCarteira(codigoCarteira: number, ativo: boolean, registrada: boolean): Promise<void> {
+    public async atualizarSituacaoCarteira(codigoCarteira: number, ativo: boolean, situacao: number): Promise<void> {
 
         await this.doUpdate([{
-            sql: 'update tb_carteira set fl_ativo=?, fl_registrado=? where id_carteira=?',
-            args: [ativo, registrada, codigoCarteira]
+            sql: 'update tb_carteira set fl_ativo=?, fl_situacao=? where id_carteira=?',
+            args: [ativo, situacao, codigoCarteira]
         }]);
     }
 }

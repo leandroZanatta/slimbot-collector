@@ -1,5 +1,7 @@
 package br.com.slimbot.collector.util;
 
+import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -11,10 +13,15 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class CookieStorage {
 
@@ -22,8 +29,31 @@ public class CookieStorage {
     private static File cookiesFile;
     private static Map<Integer, Map<String, String>> cookies = new HashMap<>();
 
+    public static void inserirCookies(Request.Builder builder, Integer codigoFaucet) {
 
-    public static void setCookiesStorage(Integer faucet, List<String> cookiesSite) {
+        Collection<String> cookies = CookieStorage.getCookiesStorage(codigoFaucet).values();
+
+        if (!cookies.isEmpty()) {
+            String dadosCookie = "";
+
+                for (String itemCookie : cookies) {
+                    if (!dadosCookie.isEmpty()) {
+                        dadosCookie = dadosCookie + ';' + itemCookie;
+                    }
+                }
+
+            builder.header("Cookie", dadosCookie);
+        }
+    }
+
+    public static void updateCookies(Response response, Integer codigoFaucet) {
+
+        if (response.headers().names().contains("set-cookie")) {
+            CookieStorage.setCookiesStorage(codigoFaucet, response.headers("set-cookie"));
+        }
+    }
+
+    private static void setCookiesStorage(Integer faucet, List<String> cookiesSite) {
 
         Map<String, String> cookiesAtuais = getCookiesStorage(faucet);
 

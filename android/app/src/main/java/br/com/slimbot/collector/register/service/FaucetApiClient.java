@@ -1,4 +1,4 @@
-package br.com.slimbot.collector.service;
+package br.com.slimbot.collector.register.service;
 
 import android.os.Build;
 import android.util.Log;
@@ -12,9 +12,9 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import br.com.slimbot.collector.job.vo.DadosPaginaVO;
+import br.com.slimbot.collector.job.vo.ResultsCollectorVO;
 import br.com.slimbot.collector.util.CookieStorage;
-import br.com.slimbot.collector.vo.DadosPaginaVO;
-import br.com.slimbot.collector.vo.ResultsCollectorVO;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -24,18 +24,15 @@ import okhttp3.Response;
 public class FaucetApiClient {
 
     private final static String LOG_TAG = "FaucetApiClient";
-
     private final String host;
     private final int faucetId;
     private final OkHttpClient client = new OkHttpClient();
-
     public FaucetApiClient(String host, int faucetId) {
         this.host = host;
         this.faucetId = faucetId;
     }
 
     public DadosPaginaVO getCadastroPage(String refer) throws IOException {
-        DadosPaginaVO dadosPaginaVO = new DadosPaginaVO();
         CookieStorage.removeCookiesStorage(this.faucetId);
 
         Request.Builder builder = createDefaultBuilderHeaders()//
@@ -44,10 +41,11 @@ public class FaucetApiClient {
 
         Response response = client.newCall(builder.build()).execute();
 
-        updateCookies(response);
+        CookieStorage.  updateCookies(response,-2);
 
         String siteData = response.body().string();
 
+        DadosPaginaVO dadosPaginaVO = new DadosPaginaVO();
         dadosPaginaVO.setCrsfToken(getCrsfToken(siteData));
         dadosPaginaVO.setSiteKey(getSiteKey(siteData));
 
@@ -224,73 +222,6 @@ public class FaucetApiClient {
         return 0;
     }
 
-    public ResultsCollectorVO efetuarRoll(String captchaId, DadosPaginaVO dadosPaginaVO) throws IOException, JSONException {
-
-        RequestBody body = new FormBody.Builder().add("h-captcha-response", captchaId).build();
-
-        Request.Builder builder = createDefaultBuilderHeaders().url(String.format("https://%s/ajax-roll", this.host))
-                .method("POST", body)//
-                .addHeader("X-CSRF-TOKEN", dadosPaginaVO.getCrsfToken())//
-                .addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")//
-                .addHeader("Accept", "*/*");
-
-        this.inserirCookies(builder);
-
-        ResultsCollectorVO resultsCollectorVO = new ResultsCollectorVO();
-
-        Response response = client.newCall(builder.build()).execute();
-
-        updateCookies(response);
-
-        String dados = response.body().string();
-
-        Log.i(LOG_TAG, "Retorno Roll: " + dados);
-
-        JSONObject retorno = new JSONObject(dados);
-
-        resultsCollectorVO.setStatus(retorno.getBoolean("status"));
-
-        if (resultsCollectorVO.isStatus()) {
-
-            resultsCollectorVO.setCoinsGanhos(BigDecimal.valueOf(retorno.getDouble("coins_won")));
-            resultsCollectorVO.setProximoRoll(retorno.getInt("remaining_seconds"));
-            resultsCollectorVO.setRollsPendentes(retorno.getInt("pending_rolls"));
-            resultsCollectorVO.setTotalBalanco(BigDecimal.valueOf(retorno.getDouble("total_coins")));
-
-            dadosPaginaVO.setNumRolls(resultsCollectorVO.getRollsPendentes());
-        } else {
-            resultsCollectorVO.setError(retorno.getString("error"));
-        }
-
-        return resultsCollectorVO;
-    }
-
-    private void inserirCookies(Request.Builder builder) {
-
-        Collection<String> cookies = CookieStorage.getCookiesStorage(this.faucetId).values();
-
-        if (!cookies.isEmpty()) {
-            String dadosCookie = "";
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                dadosCookie = cookies.stream().collect(Collectors.joining(";"));
-            } else {
-                for (String itemCookie : cookies) {
-                    if (!dadosCookie.isEmpty()) {
-                        dadosCookie = dadosCookie + ';' + itemCookie;
-                    }
-                }
-            }
-
-            builder.header("Cookie", dadosCookie);
-        }
-    }
-
-    private void updateCookies(Response response) {
-        if (response.headers().names().contains("set-cookie")) {
-            CookieStorage.setCookiesStorage(this.faucetId, response.headers("set-cookie"));
-        }
-    }
 
     private Request.Builder createDefaultBuilderHeaders() {
 
@@ -305,83 +236,6 @@ public class FaucetApiClient {
                 .addHeader("sec-ch-ua-mobile", "?0")//
                 .addHeader("sec-ch-ua-platform", "\"Windows\"");//
     }
-
-    private boolean isLogged(String page) {
-
-        return page.indexOf("<a href=\"/logout\">") > 0;
-    }
-
-    private int getTimeOut(String data) {
-
-        String strIndex = "var remainingSeconds =";
-
-        int indexInicial = data.indexOf(strIndex);
-
-        return Integer
-                .valueOf(data.substring((indexInicial + strIndex.length()), data.indexOf(';', indexInicial)).trim());
-    }
-
-    private boolean getEmailValid(String siteData) {
-
-        return !siteData.contains("<div class=\"email-confirmation\">");
-    }
-
-    private boolean getCaptcha(String siteData) {
-        String strIndex = "var captcha =";
-
-        int indexInicial = siteData.indexOf(strIndex);
-
-        return Integer.valueOf(siteData
-                .substring((indexInicial + strIndex.length()), siteData.indexOf(';', indexInicial)).trim()) != 1;
-    }
-
-    private String getSiteKey(String data) {
-
-        String strIndex = "sitekey: '";
-
-        int indexInicial = data.indexOf(strIndex);
-
-        return data.substring((indexInicial + strIndex.length()), data.indexOf("',", indexInicial)).trim();
-    }
-
-    private BigDecimal getBalance(String data) {
-
-        String strIndex = "<li class=\"navbar-coins bg-1 d-none";
-
-        int indexInicial = data.indexOf(strIndex);
-
-        String subData = data.substring(indexInicial + strIndex.length());
-
-        return BigDecimal
-                .valueOf(Double.valueOf(subData.substring(0, subData.indexOf("</a>")).replaceAll("[^0-9.]", "")));
-    }
-
-    private int getRolls(String data) {
-
-        String strIndex = "<span class=\"pending-rolls\">";
-
-        int indexInicial = data.indexOf(strIndex);
-
-        String subData = data.substring(indexInicial);
-
-        return Integer.valueOf(subData.substring(0, subData.indexOf("</")).replaceAll("[^0-9]", ""));
-    }
-
-    private String getCrsfToken(String data) {
-
-        String strIndex = "<meta name=\"csrf-token\" content=\"";
-
-        int indexInicial = data.indexOf(strIndex);
-
-        String retorno = data.substring((indexInicial + strIndex.length()), data.indexOf("/>", indexInicial) - 1);
-
-        if (retorno.endsWith("\"")) {
-            return retorno.substring(0, retorno.length() - 1);
-        }
-
-        return retorno;
-    }
-
 
 
 }

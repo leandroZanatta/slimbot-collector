@@ -3,12 +3,8 @@ import { BottomNavigation } from "react-native-paper";
 import Toast from "@phamhuuan/react-native-toast-message";
 import ConfiguracaoCarteirasScreen from "../configuracao/ConfiguracaoCarteira";
 import useCarteira from "../../hooks/useCarteira";
-
 import FaucetsScreen from "../faucets/Faucets";
-import { NativeModules } from "react-native";
-import useModuloNativo from "../../hooks/useModuloNativo";
-
-
+import DashboardScreen from "../dashboard/DashboardScreen";
 
 const HomeScreen = () => {
 
@@ -18,11 +14,13 @@ const HomeScreen = () => {
     useEffect(() => { buscarCarteiras() }, []);
 
     const [routes] = React.useState([
+        { key: 'dashboard', title: 'Home', focusedIcon: 'heart', unfocusedIcon: 'heart-outline' },
         { key: 'faucets', title: 'Faucets', focusedIcon: 'heart', unfocusedIcon: 'heart-outline' },
         { key: 'configuracao', title: 'Configuração', focusedIcon: 'heart', unfocusedIcon: 'heart-outline' },
     ]);
 
     const renderScene = BottomNavigation.SceneMap({
+        dashboard: DashboardScreen,
         faucets: FaucetsScreen,
         configuracao: ConfiguracaoCarteirasScreen,
     });

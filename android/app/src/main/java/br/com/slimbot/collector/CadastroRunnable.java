@@ -12,7 +12,7 @@ import br.com.slimbot.collector.repository.FaucetRepository;
 import br.com.slimbot.collector.repository.model.Carteira;
 import br.com.slimbot.collector.repository.model.Configuracao;
 import br.com.slimbot.collector.repository.model.Faucet;
-import br.com.slimbot.collector.service.FaucetRegister;
+import br.com.slimbot.collector.register.service.FaucetRegister;
 
 public class CadastroRunnable implements Runnable {
 
