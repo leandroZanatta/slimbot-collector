@@ -19,14 +19,10 @@ const chartConfig = {
 const DashboardScreen = () => {
 
     const { cotacoes, buscarCotacoes } = useCotacaoAtivo();
-    const { isStarted, iniciarServico, pararServico } = useModuloNativo()
-    const [situacao, setSituacao] = useState('Aguarde')
 
     useEffect(() => {
 
-        onStartService();
-
-        const subscription = DeviceEventEmitter.addListener('onFaucetAtualizado', buscarCotacoes);
+        const subscription = DeviceEventEmitter.addListener('faucetCollected', buscarCotacoes);
 
         buscarCotacoes();
 
@@ -36,42 +32,10 @@ const DashboardScreen = () => {
     }, []);
 
 
-    const onStartService = async () => {
-
-        const situacaoAtual = await isStarted();
-
-        if (!situacaoAtual) {
-
-            iniciarServico();
-        }
-
-        verificarStatusServico();
-    }
-
-    const alterarBotaoServico = async () => {
-
-        const situacaoAtual = await isStarted();
-
-        !situacaoAtual ? iniciarServico() : pararServico();
-
-        setSituacao('Aguarde');
-
-        verificarStatusServico();
-    }
-
-    const verificarStatusServico = async () => {
-
-        const situacaoAtual = await isStarted();
-
-        setSituacao(situacaoAtual ? 'Parar' : 'Iniciar');
-    }
-
     return (
         <>
             <HeaderComponent titulo="Dashboard" />
             <PTRView onRefresh={buscarCotacoes}>
-                <Button style={{ backgroundColor: '#0081bd', marginTop: 20 }} onPress={alterarBotaoServico}>{situacao}</Button>
-
                 <ScrollView>
                     <View style={{ paddingLeft: 10 }}>
                         <SaldoComponent cotacoes={cotacoes} />

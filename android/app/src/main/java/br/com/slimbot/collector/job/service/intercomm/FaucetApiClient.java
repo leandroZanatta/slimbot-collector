@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 
 import br.com.slimbot.collector.job.util.SiteDataUtil;
+import br.com.slimbot.collector.job.vo.DadosPaginaVO;
+import br.com.slimbot.collector.job.vo.ResultsCollectorVO;
 import br.com.slimbot.collector.util.CookieStorage;
-import br.com.slimbot.collector.vo.DadosPaginaVO;
-import br.com.slimbot.collector.vo.ResultsCollectorVO;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -17,7 +17,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class FaucetApiClient {
-    private final static String LOG_TAG = "FaucetApiClient";
     private final String host;
     private final int faucetId;
     private final OkHttpClient client = new OkHttpClient();
@@ -66,6 +65,14 @@ public class FaucetApiClient {
             CookieStorage.updateCookies(response, this.faucetId);
 
             return 1;
+        }
+
+        if (retorno.has("message") && retorno.getString("message").equals("CSRF token mismatch.")) {
+
+            CookieStorage.removeCookiesStorage( this.faucetId);
+            CookieStorage.updateCookies(response, this.faucetId);
+
+            return -1;
         }
 
         return 0;

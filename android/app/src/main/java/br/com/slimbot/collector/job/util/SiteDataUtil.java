@@ -2,7 +2,7 @@ package br.com.slimbot.collector.job.util;
 
 import java.math.BigDecimal;
 
-import br.com.slimbot.collector.vo.DadosPaginaVO;
+import br.com.slimbot.collector.job.vo.DadosPaginaVO;
 
 public class SiteDataUtil {
 

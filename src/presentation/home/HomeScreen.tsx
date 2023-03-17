@@ -11,7 +11,9 @@ const HomeScreen = () => {
     const [index, setIndex] = React.useState(0);
     const { buscarCarteiras } = useCarteira();
 
-    useEffect(() => { buscarCarteiras() }, []);
+    useEffect(() => {
+        buscarCarteiras();
+    }, []);
 
     const [routes] = React.useState([
         { key: 'dashboard', title: 'Home', focusedIcon: 'heart', unfocusedIcon: 'heart-outline' },

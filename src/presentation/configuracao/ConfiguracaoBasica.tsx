@@ -65,18 +65,21 @@ const ConfiguracaoBasicaScreen = () => {
             <HeaderComponent titulo="Configuração" />
             <ScrollView style={{ marginLeft: 20, marginRight: 20, alignContent: 'space-between', flexGrow: 1 }}>
                 <View style={{ marginTop: 20, flex: 1 }}>
+                    <Text style={{ fontSize: 10 }}>* Apelido/Nome do usuário.</Text>
                     <TextInput
                         value={form.descricao}
                         onChange={e => changeValue('descricao', e.nativeEvent.text)}
                         label="Apelido da Conta"
                         mode="outlined"
                     />
+                    <Text style={{ fontSize: 10, marginTop: 15 }}>* Email de propriedade do usuário. Necessário confirmação.</Text>
                     <TextInput
                         value={form.email}
                         onChange={e => changeValue('email', e.nativeEvent.text)}
                         label="Email"
                         mode="outlined"
                     />
+                    <Text style={{ fontSize: 10, marginTop: 15 }}>* A senha será utilizada para registro nos sites de faucet.</Text>
                     <TextInput
                         value={form.senha}
                         onChange={e => changeValue('senha', e.nativeEvent.text)}
@@ -84,6 +87,7 @@ const ConfiguracaoBasicaScreen = () => {
                         label="Senha"
                         mode="outlined"
                     />
+                    <Text style={{ fontSize: 10, marginTop: 15 }}>* Repita a senha anterior.</Text>
                     <TextInput
                         value={form.repetirSenha}
                         onChange={e => changeValue('repetirSenha', e.nativeEvent.text)}

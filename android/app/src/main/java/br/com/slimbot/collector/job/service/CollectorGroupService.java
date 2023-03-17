@@ -9,7 +9,6 @@ import java.util.List;
 import br.com.slimbot.collector.job.listener.CollectorListener;
 import br.com.slimbot.collector.job.vo.ResultadoColetasVO;
 import br.com.slimbot.collector.job.vo.ResultsCollectorVO;
-import br.com.slimbot.collector.register.service.FaucetCollector;
 import br.com.slimbot.collector.repository.ConfiguracaoRepository;
 import br.com.slimbot.collector.repository.ExecucaoFaucetRepository;
 import br.com.slimbot.collector.repository.FaucetRepository;
@@ -78,6 +77,8 @@ public class CollectorGroupService {
             }
 
             faucetRepository.atualizarFaucet(faucetProjection.getCodigoFaucet(), resultadoColetasVO.getTimeout(), resultadoColetasVO.getValorBalanco());
+
+            collectorListener.onFaucetCollected(faucetProjection.getCodigoFaucet());
 
         } catch (Exception ex) {
 

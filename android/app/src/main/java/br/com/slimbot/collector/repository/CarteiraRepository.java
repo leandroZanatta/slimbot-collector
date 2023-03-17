@@ -48,7 +48,7 @@ public class CarteiraRepository extends AbstractRepository {
     }
 
     public Carteira obterPorId(int codigoCarteira) {
-        List<Object[]> tupla = super.executeQuery("select id_carteira, tx_descricao, fl_ativo, fl_situacao, tx_refer from tb_carteira where id_carteira=" + codigoCarteira);
+        List<Object[]> tupla = super.executeQuery("select id_carteira, tx_descricao, fl_ativo, fl_situacao, tx_host, tx_refer from tb_carteira where id_carteira=" + codigoCarteira);
 
         if (tupla.isEmpty() || tupla.size() == 0) {
             return null;
@@ -61,14 +61,15 @@ public class CarteiraRepository extends AbstractRepository {
         carteira.setDescricao(conf[1].toString());
         carteira.setAtivo(((int) conf[2] == 1));
         carteira.setSituacao((int) conf[3]);
-        carteira.setRefer(conf[4].toString());
+        carteira.setHost(conf[4].toString());
+        carteira.setRefer(conf[5].toString());
 
         return carteira;
     }
 
     public List<Carteira> obterCarteirasInativas() {
 
-        List<Object[]> tupla = super.executeQuery("select carteira.id_carteira, carteira.tx_descricao, carteira.fl_ativo, carteira.fl_situacao, carteira.tx_refer  from tb_carteira carteira where carteira.fl_ativo = false and fl_situacao <> 3 ");
+        List<Object[]> tupla = super.executeQuery("select carteira.id_carteira, carteira.tx_descricao, carteira.fl_ativo, carteira.fl_situacao, carteira.tx_host, carteira.tx_refer  from tb_carteira carteira where carteira.fl_ativo = false and fl_situacao <> 3 ");
         List<Carteira> carteiras = new ArrayList<>();
 
         if (tupla.isEmpty()) {
@@ -83,7 +84,34 @@ public class CarteiraRepository extends AbstractRepository {
             carteira.setDescricao(conf[1].toString());
             carteira.setAtivo(((int) conf[2] == 1));
             carteira.setSituacao((int) conf[3]);
-            carteira.setRefer(conf[4].toString());
+            carteira.setHost(conf[4].toString());
+            carteira.setRefer(conf[5].toString());
+
+            carteiras.add(carteira);
+        }
+
+        return carteiras;
+    }
+
+    public List<Carteira> obterCarteiras() {
+
+        List<Object[]> tupla = super.executeQuery("select carteira.id_carteira, carteira.tx_descricao, carteira.fl_ativo, carteira.fl_situacao, carteira.tx_host, carteira.tx_refer from tb_carteira carteira order by fl_ativo");
+        List<Carteira> carteiras = new ArrayList<>();
+
+        if (tupla.isEmpty()) {
+            return null;
+        }
+
+        for (int i = 0; i < tupla.size(); i++) {
+            Object[] conf = tupla.get(i);
+
+            Carteira carteira = new Carteira();
+            carteira.setId((Integer) conf[0]);
+            carteira.setDescricao(conf[1].toString());
+            carteira.setAtivo(((int) conf[2] == 1));
+            carteira.setSituacao((int) conf[3]);
+            carteira.setHost(conf[4].toString());
+            carteira.setRefer(conf[5].toString());
 
             carteiras.add(carteira);
         }

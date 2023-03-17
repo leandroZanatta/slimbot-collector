@@ -13,23 +13,9 @@ export default function useModuloNativo() {
         Collector.autorizarCadastro(codigoCarteira, url);
     }
 
-    const iniciarServico = () => {
-        Collector.startService();
-    }
-
-    const pararServico = () => {
-        Collector.stopService();
-    }
-
-    const isStarted = async () => {
-        return await Collector.isStarted();
-    }
 
     return {
         verificarUsuarioCadastrado,
-        autorizarCarteira,
-        iniciarServico,
-        pararServico,
-        isStarted
+        autorizarCarteira
     }
 }

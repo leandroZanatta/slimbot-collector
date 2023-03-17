@@ -34,6 +34,10 @@ const initialState: IInitialStateMigration = {
       name: "202301271741",
       query: ExecucaoFaucet.Builder().getDDL(),
     },
+    {
+      name: "20230301094500",
+      query: ["update tb_carteira set vl_saldoresgate=250000 where id_carteira=13"],
+    },
   ]
 };
 

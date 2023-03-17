@@ -7,15 +7,18 @@ public class Carteira {
     private String descricao;
     private boolean ativo;
     private int situacao;
+
+    private String host;
     private String refer;
     public Carteira() {
 
     }
-    public Carteira(int id, String descricao, boolean ativo, int situacao, String refer) {
+    public Carteira(int id, String descricao, boolean ativo, int situacao,String host, String refer) {
         this.setId(id);
         this.setDescricao(descricao);
         this.setAtivo(ativo);
         this.setSituacao(situacao);
+        this.setHost(host);
         this.setRefer(refer);
     }
 
@@ -57,11 +60,20 @@ public class Carteira {
         this.situacao = situacao;
     }
 
+
     public String getRefer() {
         return refer;
     }
 
     public void setRefer(String refer) {
         this.refer = refer;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 }

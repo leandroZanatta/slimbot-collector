@@ -8,21 +8,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.slimbot.collector.job.service.intercomm.CaptchaApiClient;
+import br.com.slimbot.collector.job.service.intercomm.FaucetApiClient;
+import br.com.slimbot.collector.job.vo.CaptchaPropsVO;
+import br.com.slimbot.collector.job.vo.DadosPaginaVO;
+import br.com.slimbot.collector.job.vo.ResultadoColetasVO;
+import br.com.slimbot.collector.job.vo.ResultsCollectorVO;
 import br.com.slimbot.collector.repository.model.Configuracao;
 import br.com.slimbot.collector.repository.projection.FaucetProjection;
-import br.com.slimbot.collector.register.service.CaptchaService;
-import br.com.slimbot.collector.register.service.FaucetApiClient;
-import br.com.slimbot.collector.vo.CaptchaPropsVO;
-import br.com.slimbot.collector.vo.DadosPaginaVO;
-import br.com.slimbot.collector.vo.ResultadoColetasVO;
-import br.com.slimbot.collector.vo.ResultsCollectorVO;
+
 
 public class FaucetCollector {
     private final static String LOG_TAG = "FaucetCollector";
     private final FaucetProjection faucetProjection;
     private final Configuracao configuracao;
     private final FaucetApiClient faucetApiClient;
-    private final CaptchaService captchaService = new CaptchaService();
+    private final CaptchaApiClient captchaApiClient = new CaptchaApiClient();
 
     public FaucetCollector(FaucetProjection faucetProjection, Configuracao configuracao) {
         this.faucetProjection = faucetProjection;
@@ -67,7 +68,7 @@ public class FaucetCollector {
             String token = "whitelist";
 
             if (dadosPaginaVO.isCaptcha()) {
-                token = captchaService.resolverCaptcha(new CaptchaPropsVO(faucetProjection.getHost(), dadosPaginaVO.getSiteKey(), configuracao.getCaptchaHost()));
+                token = captchaApiClient.resolverCaptcha(new CaptchaPropsVO(faucetProjection.getHost(), dadosPaginaVO.getSiteKey(), configuracao.getCaptchaHost()));
             }
 
             Log.i(LOG_TAG, "Executando roll");
@@ -96,7 +97,7 @@ public class FaucetCollector {
 
             Log.i(LOG_TAG, "Efetuando Login");
 
-            faucetApiClient.efetuarLogin(dadosPagina, captchaService.resolverCaptcha(captchaPropsVO), configuracao.getEmail(), configuracao.getSenha());
+            faucetApiClient.efetuarLogin(dadosPagina, captchaApiClient.resolverCaptcha(captchaPropsVO), configuracao.getEmail(), configuracao.getSenha());
 
             dadosPagina = this.faucetApiClient.obterDadosPagina();
         }

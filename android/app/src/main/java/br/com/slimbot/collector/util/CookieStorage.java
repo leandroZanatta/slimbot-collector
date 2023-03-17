@@ -1,7 +1,5 @@
 package br.com.slimbot.collector.util;
 
-import android.content.Intent;
-import android.os.Build;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -18,7 +16,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import okhttp3.Request;
 import okhttp3.Response;
@@ -34,13 +31,12 @@ public class CookieStorage {
         Collection<String> cookies = CookieStorage.getCookiesStorage(codigoFaucet).values();
 
         if (!cookies.isEmpty()) {
+
             String dadosCookie = "";
 
-                for (String itemCookie : cookies) {
-                    if (!dadosCookie.isEmpty()) {
-                        dadosCookie = dadosCookie + ';' + itemCookie;
-                    }
-                }
+            for (String itemCookie : cookies) {
+                dadosCookie = dadosCookie + (!dadosCookie.isEmpty() ? ";" : "") + itemCookie;
+            }
 
             builder.header("Cookie", dadosCookie);
         }

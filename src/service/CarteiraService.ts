@@ -16,7 +16,7 @@ export default class CarteiraService {
         return await this.carteiraRepository.buscarCarteiras();
     }
 
-    public async atualizarSituacaoCarteira(codigoCarteira: number, ativo: boolean, registrada: boolean) {
+    public async atualizarSituacaoCarteira(codigoCarteira: number, ativo: boolean, registrada: number) {
 
         await this.carteiraRepository.atualizarSituacaoCarteira(codigoCarteira, ativo, registrada);
     }

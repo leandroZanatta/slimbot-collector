@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -44,7 +45,7 @@ public class FaucetRepository extends AbstractRepository {
 
     }
 
-    public Long salvarFaucet(Faucet faucet) {
+    public Integer salvarFaucet(Faucet faucet) {
 
         SQLiteDatabase checkDB = null;
 
@@ -58,7 +59,7 @@ public class FaucetRepository extends AbstractRepository {
             contentValues.put("dt_proximaexecucao", faucet.getProximaExecucao());
             contentValues.put("vl_saldoatual", faucet.getSaldoAtual());
 
-            return checkDB.insert("tb_faucet", "id_faucet", contentValues);
+            return (int) checkDB.insert("tb_faucet", "id_faucet", contentValues);
 
 
         } catch (SQLiteException e) {
@@ -100,8 +101,9 @@ public class FaucetRepository extends AbstractRepository {
 
         List<Object[]> tupla = super.executeQuery("select faucet.id_faucet, carteira.tx_descricao, carteira.tx_host, faucet.dt_proximaexecucao, faucet.vl_saldoatual from tb_faucet faucet inner join tb_carteira carteira on faucet.cd_carteira=carteira.id_carteira where carteira.fl_ativo=true order by faucet.dt_proximaexecucao asc");
         List<FaucetProjection> faucetProjections = new ArrayList<>();
+
         if (tupla.isEmpty()) {
-            return null;
+            return Collections.emptyList();
         }
 
         for (int i = 0; i < tupla.size(); i++) {

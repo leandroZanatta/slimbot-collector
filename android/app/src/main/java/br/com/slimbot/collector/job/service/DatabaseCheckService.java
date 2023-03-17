@@ -1,7 +1,6 @@
 package br.com.slimbot.collector.job.service;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 
 public class DatabaseCheckService {
 
@@ -14,8 +13,11 @@ public class DatabaseCheckService {
             checkDB = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
             checkDB.close();
 
-        } catch (SQLiteException e) {
+        } catch (Exception e) {
 
+            e.printStackTrace();
+
+            return false;
         }
 
         return checkDB != null;

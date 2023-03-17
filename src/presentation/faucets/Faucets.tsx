@@ -30,13 +30,13 @@ const FaucetsScreen = () => {
 
     const { faucets, buscarFaucets, atualizarFaucet } = useFaucet();
 
-    const onFaucetAtualizado = (event: Array<number>) => {
-        atualizarFaucet(event[0]);
+    const onFaucetAtualizado = (event: any) => {
+        atualizarFaucet(event.faucetId);
     };
 
     useEffect(() => {
 
-        const subscription = DeviceEventEmitter.addListener('onFaucetAtualizado', onFaucetAtualizado);
+        const subscription = DeviceEventEmitter.addListener('faucetCollected', onFaucetAtualizado);
 
         buscarFaucets();
 

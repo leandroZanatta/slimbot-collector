@@ -27,7 +27,7 @@ export const buscarConfiguracaoThunk = createAsyncThunk(
 export const salvarConfiguracaoThunk = createAsyncThunk(
   'configuracao/salvarConfiguracao',
   async (props: SalvarConfiguracaoProps): Promise<IConfiguracaoProps | null> => {
-    debugger
+  
     const data: IConfiguracaoProps = await new ConfiguracaoService(props.db).salvarConfiguracao(props.configuracao as IConfiguracaoProps);
 
     if (props.configuracao.usuarioRegistrado) {
@@ -43,9 +43,8 @@ export const salvarConfiguracaoThunk = createAsyncThunk(
 
         faucetRepository.save(Faucet.Builder().codigoCarteira(carteira.id).codigoUsuario(data.id).proximaExecucao(new Date()).saldoAtual(0));
       });
-
-
     }
+
     return data;
   }
 );

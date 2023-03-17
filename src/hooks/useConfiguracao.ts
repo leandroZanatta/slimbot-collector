@@ -3,7 +3,6 @@ import { IConfiguracaoProps } from "../repository/model/configuracao/Configuraca
 import { buscarConfiguracaoThunk, salvarConfiguracaoThunk } from "../store/thunk/ConfiguracaoThunk";
 import { useAppDispatch, useAppSelector } from "./redux";
 import { useDb } from "./useDb";
-import useModuloNativo from "./useModuloNativo";
 
 
 export default function useConfiguracao() {
@@ -11,7 +10,6 @@ export default function useConfiguracao() {
     const { db } = useDb();
     const loading = useAppSelector((state: any) => state.ConfiguracaoSlice.loading);
     const configuracao = useAppSelector((state: any) => state.ConfiguracaoSlice.configuracao);
-    const { verificarUsuarioCadastrado } = useModuloNativo();
     const dispatch = useAppDispatch();
 
     const buscarConfiguracao = () => {
@@ -21,8 +19,6 @@ export default function useConfiguracao() {
     const salvarConfiguracao = async (configuracao: IConfiguracaoFormProps) => {
 
         await dispatch(salvarConfiguracaoThunk({ db, configuracao }));
-
-        verificarUsuarioCadastrado();
     }
 
     return {
