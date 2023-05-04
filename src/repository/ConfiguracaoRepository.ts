@@ -7,4 +7,12 @@ export default class ConfiguracaoRepository extends AbstractRepository<IConfigur
     constructor(db: WebSQLDatabase) {
         super(db);
     }
+
+    public async atualizarServidor(servidor: string): Promise<any> {
+
+        return await this.doUpdate([{
+            sql: 'update tb_configuracao set tx_captchahost=?',
+            args: [servidor]
+        }]);
+    }
 }

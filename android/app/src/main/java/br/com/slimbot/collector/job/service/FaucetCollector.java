@@ -97,7 +97,7 @@ public class FaucetCollector {
 
             Log.i(LOG_TAG, "Efetuando Login");
 
-            faucetApiClient.efetuarLogin(dadosPagina, captchaApiClient.resolverCaptcha(captchaPropsVO), configuracao.getEmail(), configuracao.getSenha());
+            faucetApiClient.efetuarLogin(dadosPagina, captchaApiClient.resolverCaptcha(captchaPropsVO), faucetProjection.getEmail(), faucetProjection.getSenha());
 
             dadosPagina = this.faucetApiClient.obterDadosPagina();
         }

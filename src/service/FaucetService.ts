@@ -16,8 +16,8 @@ export default class FaucetService {
         await this.faucetRepository.save(faucet);
     }
 
-    public async buscarFaucetsCarteira(): Promise<Array<IFaucetCarteiraProps>> {
-        return await this.faucetRepository.buscarFaucetsCarteira();
+    public async buscarFaucetsCarteira(cdUsuario: number): Promise<Array<IFaucetCarteiraProps>> {
+        return await this.faucetRepository.buscarFaucetsCarteira(cdUsuario);
     }
 
     public async buscarFaucetCarteiraPorId(cdFaucet: number): Promise<IFaucetCarteiraProps> {

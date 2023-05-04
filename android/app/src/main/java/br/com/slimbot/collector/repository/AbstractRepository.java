@@ -21,6 +21,7 @@ public abstract class AbstractRepository {
     public AbstractRepository(String dbPath) {
         this.dbPath = dbPath;
     }
+
     protected synchronized List<Object[]> executeQuery(String query) {
 
         SQLiteDatabase checkDB = null;

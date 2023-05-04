@@ -1,40 +1,41 @@
 import React, { useState } from "react";
-import useConfiguracao from "../../hooks/useConfiguracao";
-import { IConfiguracaoProps } from "../../repository/model/configuracao/Configuracao.meta";
+import useUsuarios from "../../hooks/useUsuarios";
 import { Button, TextInput, Switch, Text } from "react-native-paper";
 import { ScrollView, View } from 'react-native';
 import HeaderComponent from "../components/Header";
 import Toast from "@phamhuuan/react-native-toast-message";
 
-export interface IConfiguracaoFormProps {
+export interface IUsuarioFormProps {
     id: number | null;
     descricao: string;
     email: string;
     senha: string;
     repetirSenha: string;
     usuarioRegistrado: boolean;
+    principal: string;
 }
 
-const initialData: IConfiguracaoFormProps = {
+const initialData: IUsuarioFormProps = {
     id: null,
     descricao: '',
     email: '',
     senha: '',
     repetirSenha: '',
-    usuarioRegistrado: false
+    usuarioRegistrado: false,
+    principal: 'N'
 }
 
-const ConfiguracaoBasicaScreen = () => {
+const UsuarioScreen = () => {
 
-    const { salvarConfiguracao } = useConfiguracao();
+    const { salvarUsuario } = useUsuarios();
     const [secuteText, setSecureText] = useState(true);
-    const [form, setForm] = useState<IConfiguracaoFormProps>(initialData);
+    const [form, setForm] = useState<IUsuarioFormProps>(initialData);
     const changeValue = (property: string, value: any) => setForm({ ...form, [property]: value });
 
     const salvar = () => {
 
         if (isValid()) {
-            salvarConfiguracao(form);
+            salvarUsuario(form);
         }
     }
 
@@ -48,6 +49,28 @@ const ConfiguracaoBasicaScreen = () => {
 
             return false;
         }
+
+        if (form.senha === '') {
+
+            errorToast('A senha não pode ser vazia');
+
+            return false;
+        }
+
+        if (form.senha.length < 8) {
+
+            errorToast('A senha deve conter 8 dígitos');
+
+            return false;
+        }
+
+        if (form.senha !== form.repetirSenha) {
+
+            errorToast('As senhas devem ser iguais');
+
+            return false;
+        }
+
         return true;
     }
 
@@ -55,14 +78,16 @@ const ConfiguracaoBasicaScreen = () => {
 
         Toast.show({
             type: 'info',
-            position: 'top',
-            text1: msg,
+            text1: 'Atenção!',
+            text2: msg,
+            visibilityTime: 3000,
+            autoHide: true,
         });
     }
 
     return (
         <>
-            <HeaderComponent titulo="Configuração" />
+            <HeaderComponent titulo="Usuários" />
             <ScrollView style={{ marginLeft: 20, marginRight: 20, alignContent: 'space-between', flexGrow: 1 }}>
                 <View style={{ marginTop: 20, flex: 1 }}>
                     <Text style={{ fontSize: 10 }}>* Apelido/Nome do usuário.</Text>
@@ -76,6 +101,7 @@ const ConfiguracaoBasicaScreen = () => {
                     <TextInput
                         value={form.email}
                         onChange={e => changeValue('email', e.nativeEvent.text)}
+                        keyboardType='email-address'
                         label="Email"
                         mode="outlined"
                     />
@@ -110,4 +136,4 @@ const ConfiguracaoBasicaScreen = () => {
     )
 }
 
-export default ConfiguracaoBasicaScreen;
+export default UsuarioScreen;

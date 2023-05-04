@@ -1,6 +1,6 @@
-import { IConfiguracaoFormProps } from "../presentation/configuracao/ConfiguracaoBasica";
 import { IConfiguracaoProps } from "../repository/model/configuracao/Configuracao.meta";
-import { buscarConfiguracaoThunk, salvarConfiguracaoThunk } from "../store/thunk/ConfiguracaoThunk";
+import ConfiguracaoService from "../service/ConfiguracaoService";
+import { buscarConfiguracaoThunk } from "../store/thunk/ConfiguracaoThunk";
 import { useAppDispatch, useAppSelector } from "./redux";
 import { useDb } from "./useDb";
 
@@ -8,23 +8,22 @@ import { useDb } from "./useDb";
 export default function useConfiguracao() {
 
     const { db } = useDb();
-    const loading = useAppSelector((state: any) => state.ConfiguracaoSlice.loading);
-    const configuracao = useAppSelector((state: any) => state.ConfiguracaoSlice.configuracao);
+
+    const configuracao: IConfiguracaoProps | null = useAppSelector((state: any) => state.ConfiguracaoSlice.configuracao);
     const dispatch = useAppDispatch();
 
-    const buscarConfiguracao = () => {
-        dispatch(buscarConfiguracaoThunk(db));
+    const carregarConfiguracao = () => {
+        dispatch(buscarConfiguracaoThunk(db))
     }
 
-    const salvarConfiguracao = async (configuracao: IConfiguracaoFormProps) => {
 
-        await dispatch(salvarConfiguracaoThunk({ db, configuracao }));
+    const atualizarServidor = async (servidor: string) => {
+        await new ConfiguracaoService(db).atualizarServidor(servidor);
     }
 
     return {
-        loading,
         configuracao,
-        buscarConfiguracao,
-        salvarConfiguracao
+        carregarConfiguracao,
+        atualizarServidor,
     }
 }

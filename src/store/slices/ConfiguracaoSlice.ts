@@ -1,15 +1,13 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { IConfiguracaoProps } from '../../repository/model/configuracao/Configuracao.meta';
-import { buscarConfiguracaoBuilderAsync, salvarConfiguracaoBuilderAsync } from '../thunk/ConfiguracaoThunk';
+import { buscarConfiguracaoBuilderAsync } from '../thunk/ConfiguracaoThunk';
 
 export interface IInitialStateConfiguracao {
   configuracao: IConfiguracaoProps | null
-  loading: boolean
 }
 
 const initialState: IInitialStateConfiguracao = {
-  configuracao: null,
-  loading: true
+  configuracao: null
 };
 
 const slice = createSlice({
@@ -18,7 +16,6 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     buscarConfiguracaoBuilderAsync(builder);
-    salvarConfiguracaoBuilderAsync(builder);
   },
 });
 

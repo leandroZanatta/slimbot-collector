@@ -4,17 +4,25 @@ import CarteiraRepository from "../../repository/CarteiraRepository";
 import FaucetRepository from "../../repository/FaucetRepository";
 import { ICarteiraProps } from "../../repository/model/carteira/Carteira.meta";
 import Faucet from "../../repository/model/faucet/Faucet";
-import { IFaucetProps } from "../../repository/model/faucet/Faucet.meta";
 import CotacaoAtivoService from "../../service/CotacaoAtivoService";
 import { ICotacaoAtivo } from "../../types/CotacaoAtivo";
 import { IInitialStateCotacaoAtivo } from "../slices/CotacaoAtivoSlice";
+import Carteira from "../../repository/model/carteira/Carteira";
+import { IFaucetProps } from "../../repository/model/faucet/Faucet.meta";
+
+
+interface IDadosCotacaoUsuariosProps {
+  db: WebSQLDatabase;
+  codigoUsuario: number;
+}
 
 export const buscarCotacaoAtivos = createAsyncThunk(
   'cotacaoAtivo/buscarCotacaoAtivos',
-  async (db: WebSQLDatabase): Promise<Array<ICotacaoAtivo>> => {
+  async ({ db, codigoUsuario }: IDadosCotacaoUsuariosProps): Promise<Array<ICotacaoAtivo>> => {
 
-    const carteiras: Array<ICarteiraProps> = await new CarteiraRepository(db).buscarCarteiras();
-    const faucets = await new FaucetRepository(db).list(Faucet.Builder());
+
+    const carteiras: Array<ICarteiraProps> = await new CarteiraRepository(db).list(Carteira.Builder());
+    const faucets = await new FaucetRepository(db).list(Faucet.Builder().codigoUsuario(codigoUsuario));
     const cotacoes = await new CotacaoAtivoService().buscarCotacaoAtivos(carteiras.map(carteira => carteira.uuid).join('%2C'));
     const dadosCotacao: Array<ICotacaoAtivo> = [];
 
@@ -26,7 +34,7 @@ export const buscarCotacaoAtivos = createAsyncThunk(
 
       dadosCotacao.push({
         carteira: carteira,
-        quantidade: faucetAtual.length > 0 ? faucetAtual[0].saldoAtual : 0,
+        quantidade: faucetAtual.length > 0 ? faucetAtual.map((item: IFaucetProps) => item.saldoAtual).reduce((anterior: number, atual: number) => anterior += atual) : 0,
         preco: cotacaoAtual ? cotacaoAtual.brl : 0
       })
     });

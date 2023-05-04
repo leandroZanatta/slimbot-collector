@@ -1,6 +1,6 @@
 import { WebSQLDatabase } from "expo-sqlite/build/SQLite.types";
 import CarteiraRepository from "../repository/CarteiraRepository";
-import { ICarteiraProps } from "../repository/model/carteira/Carteira.meta";
+import { IFaucetCarteiraProps } from "../repository/model/carteira/Carteira.meta";
 
 
 export default class CarteiraService {
@@ -11,9 +11,9 @@ export default class CarteiraService {
         this.carteiraRepository = new CarteiraRepository(db);
     }
 
-    public async buscarCarteiras(): Promise<Array<ICarteiraProps>> {
+    public async buscarCarteiras(codigoUsuario: number): Promise<Array<IFaucetCarteiraProps>> {
 
-        return await this.carteiraRepository.buscarCarteiras();
+        return await this.carteiraRepository.buscarCarteiras(codigoUsuario);
     }
 
     public async atualizarSituacaoCarteira(codigoCarteira: number, ativo: boolean, registrada: number) {

@@ -5,19 +5,16 @@ import androidx.annotation.NonNull;
 public class Carteira {
     private int id;
     private String descricao;
-    private boolean ativo;
-    private int situacao;
-
     private String host;
     private String refer;
+
     public Carteira() {
 
     }
-    public Carteira(int id, String descricao, boolean ativo, int situacao,String host, String refer) {
+
+    public Carteira(int id, String descricao, String host, String refer) {
         this.setId(id);
         this.setDescricao(descricao);
-        this.setAtivo(ativo);
-        this.setSituacao(situacao);
         this.setHost(host);
         this.setRefer(refer);
     }
@@ -25,7 +22,7 @@ public class Carteira {
     @NonNull
     @Override
     public String toString() {
-        return String.format("{id: %s, descricao:%s, ativo:%s, situacao:%s, refer:%s}", getId(), getDescricao(), isAtivo() ?"S":"N", getSituacao() , getRefer());
+        return String.format("{id: %s, descricao:%s, refer:%s}", getId(), getDescricao(), getRefer());
     }
 
     public int getId() {
@@ -42,22 +39,6 @@ public class Carteira {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
-    }
-
-    public int getSituacao() {
-        return situacao;
-    }
-
-    public void setSituacao(int situacao) {
-        this.situacao = situacao;
     }
 
 

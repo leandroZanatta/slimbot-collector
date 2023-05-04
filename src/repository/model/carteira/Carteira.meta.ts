@@ -2,15 +2,24 @@ import { arrayToMap } from "../../../utilitarios/ArrayToMap";
 import { DBTypes } from "../../types/DBTypes";
 import { IMetadataProps } from '../../types/RepositoryTypes';
 
+
+export interface IFaucetCarteiraProps {
+    id: number;
+    codigoFaucet: number;
+    descricao: string;
+    ativo: boolean;
+    situacao: number;
+    host: string;
+    refer: string;
+}
+
 export interface ICarteiraProps {
     id: number;
     descricao: string;
     uuid: string;
     carteira: string;
     tipo: number;
-    ativo: boolean;
     saldoResgate: number;
-    situacao: number; //0 - NAO-VALIDADA, 1 - REGISTRADA, 2 - JA_REGISTRADO, 3 - VALIDADO, 4 - ERRO_AUTENTICACAO
     host: string;
     refer: string;
 }
@@ -47,22 +56,11 @@ export const carteiraMetaData: IMetadataProps = {
         value: null,
         notNull: true
     }, {
-        alias: 'ativo',
-        name: 'fl_ativo',
-        field: DBTypes.BOOLEAN,
-        value: null,
-        notNull: true
-    }, {
         alias: 'saldoResgate',
         name: 'vl_saldoresgate',
         field: DBTypes.NUMERIC_18_8,
         value: null,
         notNull: true
-    }, {
-        alias: 'situacao',
-        name: 'fl_situacao',
-        field: DBTypes.NUMERIC_3_0,
-        value: null
     }, {
         alias: 'host',
         name: 'tx_host',

@@ -14,25 +14,31 @@ export default class MigrationService {
 
     public async migrate(migrations: Array<IMigrationQueryProps>) {
 
-        await this.migrationRepository.executeUpdate(Migration.Builder().getDDL());
+        try {
 
-        for (let i = 0; i < migrations.length; i++) {
+            await this.migrationRepository.executeUpdate(Migration.Builder().getDDL());
 
-            const migration = migrations[i];
+            for (let i = 0; i < migrations.length; i++) {
 
-            const actual: Migration = Migration.Builder().id(migration.name);
+                const migration = migrations[i];
 
-            const execucaoActual = await this.migrationRepository.findFirst(actual);
+                const actual: Migration = Migration.Builder().id(migration.name);
 
-            if (execucaoActual == null) {
-                await this.migrationRepository.executeUpdate(migration.query);
+                const execucaoActual = await this.migrationRepository.findFirst(actual);
+             
+                if (execucaoActual == null) {
+                    await this.migrationRepository.executeUpdate(migration.query);
 
-                await this.migrationRepository.save(actual.execucao(new Date()));
-            } else {
-                console.log(`Migration: ${migration.name} já foi executada`)
+                    await this.migrationRepository.save(actual.execucao(new Date()));
+                } else {
+                    console.log(`Migration: ${migration.name} já foi executada`)
+                }
+
             }
+        } catch (error) {
+            console.log(error)
 
+            throw new Error("Não foi possivel executar as migrations")
         }
-
     }
 }

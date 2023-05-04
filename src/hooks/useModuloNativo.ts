@@ -5,17 +5,13 @@ export default function useModuloNativo() {
 
     const { Collector } = NativeModules;
 
-    const verificarUsuarioCadastrado = () => {
-        Collector.verificarCadastro();
-    }
-
-    const autorizarCarteira = (codigoCarteira: number, url: string) => {
-        Collector.autorizarCadastro(codigoCarteira, url);
+    const iniciarColeta = () => {
+        debugger
+        Collector.iniciarWorker();
     }
 
 
     return {
-        verificarUsuarioCadastrado,
-        autorizarCarteira
+        iniciarColeta
     }
 }

@@ -1,6 +1,8 @@
 import React from "react";
 import { Text } from "react-native-paper";
 import { View } from "react-native";
+import AvatarPopupList from "./AvatarPopupList";
+
 
 interface IHeaderProps {
     titulo: string;
@@ -8,9 +10,11 @@ interface IHeaderProps {
 
 const HeaderComponent = ({ titulo }: IHeaderProps) => {
 
+
     return (
-        <View style={{ height: 45, backgroundColor: '#C2185B', justifyContent: "center", alignItems: 'center' }}>
-            <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>{titulo.toUpperCase()}</Text>
+        <View style={{ height: 45, backgroundColor: '#C2185B', flexDirection: 'row', justifyContent: "center", alignItems: 'center' }}>
+            <AvatarPopupList />
+            <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold', flex: 1, textAlign: 'center' }}>{titulo.toUpperCase()}</Text>
         </View>
     )
 }

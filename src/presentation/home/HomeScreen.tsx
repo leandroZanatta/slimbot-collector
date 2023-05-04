@@ -1,24 +1,26 @@
 import React, { useEffect } from "react";
 import { BottomNavigation } from "react-native-paper";
-import Toast from "@phamhuuan/react-native-toast-message";
 import ConfiguracaoCarteirasScreen from "../configuracao/ConfiguracaoCarteira";
 import useCarteira from "../../hooks/useCarteira";
 import FaucetsScreen from "../faucets/Faucets";
 import DashboardScreen from "../dashboard/DashboardScreen";
+import useModuloNativo from "../../hooks/useModuloNativo";
 
 const HomeScreen = () => {
 
     const [index, setIndex] = React.useState(0);
     const { buscarCarteiras } = useCarteira();
-
+    const { iniciarColeta } = useModuloNativo();
+    
     useEffect(() => {
         buscarCarteiras();
+        iniciarColeta();
     }, []);
 
     const [routes] = React.useState([
-        { key: 'dashboard', title: 'Home', focusedIcon: 'heart', unfocusedIcon: 'heart-outline' },
-        { key: 'faucets', title: 'Faucets', focusedIcon: 'heart', unfocusedIcon: 'heart-outline' },
-        { key: 'configuracao', title: 'Configuração', focusedIcon: 'heart', unfocusedIcon: 'heart-outline' },
+        { key: 'dashboard', title: 'Home', focusedIcon: 'home-account', unfocusedIcon: 'home' },
+        { key: 'faucets', title: 'Faucets', focusedIcon: 'wallet-plus', unfocusedIcon: 'wallet-plus-outline' },
+        { key: 'configuracao', title: 'Configuração', focusedIcon: 'network', unfocusedIcon: 'network-outline' },
     ]);
 
     const renderScene = BottomNavigation.SceneMap({
@@ -29,7 +31,6 @@ const HomeScreen = () => {
 
     return (
         <>
-            <Toast ref={(ref: Toast) => Toast.setRef(ref)} />
             <BottomNavigation
                 navigationState={{ index, routes }}
                 onIndexChange={setIndex}

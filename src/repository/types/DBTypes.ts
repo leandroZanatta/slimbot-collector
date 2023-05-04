@@ -18,9 +18,19 @@ export const DBTypes = {
         pk: true
     },
 
+    VARCHAR_1: {
+        type: DBType.VARCHAR,
+        precision: 1
+    },
+
     VARCHAR_100: {
         type: DBType.VARCHAR,
         precision: 100
+    },
+
+    VARCHAR_500: {
+        type: DBType.VARCHAR,
+        precision: 500
     },
 
     NUMERIC_18_0: {

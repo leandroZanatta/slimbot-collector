@@ -10,22 +10,28 @@ public class Faucet {
     private String proximaExecucao;
     private Double saldoAtual;
 
+    private boolean ativo;
+
+    private int situacao;
+
     public Faucet() {
 
     }
 
-    public Faucet(Integer id, int codigoCarteira, int codigoUsuario, String proximaExecucao, Double saldoAtual) {
+    public Faucet(Integer id, int codigoCarteira, int codigoUsuario, String proximaExecucao, Double saldoAtual, boolean ativo, int situacao) {
         this.setId(id);
         this.setCodigoCarteira(codigoCarteira);
         this.setCodigoUsuario(codigoUsuario);
         this.setProximaExecucao(proximaExecucao);
         this.setSaldoAtual(saldoAtual);
+        this.setAtivo(ativo);
+        this.setSituacao(situacao);
     }
 
     @NonNull
     @Override
     public String toString() {
-        return String.format("{id: %s, codigoCarteira: %s, codigoUsuario:%s, proximaExecucao:%s, saldoAtual:%s}", getId(), getCodigoCarteira(), getCodigoUsuario(), getProximaExecucao(), getSaldoAtual());
+        return String.format("{id: %s, codigoCarteira: %s, codigoUsuario:%s, proximaExecucao:%s, saldoAtual:%s, ativo:%s, situacao:%s}", getId(), getCodigoCarteira(), getCodigoUsuario(), getProximaExecucao(), getSaldoAtual(), isAtivo() ? "S" : "N", getSituacao());
     }
 
 
@@ -67,5 +73,21 @@ public class Faucet {
 
     public void setSaldoAtual(Double saldoAtual) {
         this.saldoAtual = saldoAtual;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public int getSituacao() {
+        return situacao;
+    }
+
+    public void setSituacao(int situacao) {
+        this.situacao = situacao;
     }
 }

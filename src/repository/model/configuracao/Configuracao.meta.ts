@@ -5,9 +5,7 @@ import { IMetadataProps } from '../../types/RepositoryTypes';
 
 export interface IConfiguracaoProps {
     id: number;
-    descricao: string;
-    email: string;
-    senha: string;
+    captchaHost: string;
 }
 
 export const configuracaoMetaData: IMetadataProps = {
@@ -20,21 +18,9 @@ export const configuracaoMetaData: IMetadataProps = {
         value: null,
         notNull: true
     }, {
-        alias: 'descricao',
-        name: 'tx_descricao',
-        field: DBTypes.VARCHAR_100,
-        value: null,
-        notNull: true
-    }, {
-        alias: 'email',
-        name: 'tx_email',
-        field: DBTypes.VARCHAR_100,
-        value: null,
-        notNull: true
-    }, {
-        alias: 'senha',
-        name: 'tx_senha',
-        field: DBTypes.VARCHAR_100,
+        alias: 'captchaHost',
+        name: 'tx_captchahost',
+        field: DBTypes.VARCHAR_500,
         value: null,
         notNull: true
     }])

@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,27 +23,6 @@ public class FaucetRepository extends AbstractRepository {
         super(dbPath);
     }
 
-    public Faucet obterFaucetPorCarteira(int codigoCarteira) {
-
-        List<Object[]> tupla = super.executeQuery(String.format("select id_faucet, cd_carteira, cd_usuario, vl_saldoatual, dt_proximaexecucao from tb_faucet where cd_carteira=%s limit 1", codigoCarteira));
-
-        if (tupla.isEmpty()) {
-            return null;
-        }
-
-        Object[] tupleItem = tupla.get(0);
-
-        Faucet faucet = new Faucet();
-        faucet.setId((Integer) tupleItem[0]);
-        faucet.setCodigoCarteira((Integer) tupleItem[1]);
-        faucet.setCodigoUsuario((Integer) tupleItem[2]);
-        faucet.setSaldoAtual(Double.valueOf(tupleItem[3].toString()));
-        faucet.setProximaExecucao((String) tupleItem[4]);
-
-        return faucet;
-
-    }
-
     public Integer salvarFaucet(Faucet faucet) {
 
         SQLiteDatabase checkDB = null;
@@ -60,8 +38,6 @@ public class FaucetRepository extends AbstractRepository {
             contentValues.put("vl_saldoatual", faucet.getSaldoAtual());
 
             return (int) checkDB.insert("tb_faucet", "id_faucet", contentValues);
-
-
         } catch (SQLiteException e) {
             e.printStackTrace();
         } finally {
@@ -99,7 +75,7 @@ public class FaucetRepository extends AbstractRepository {
 
     public List<FaucetProjection> obterFaucetExecucao() {
 
-        List<Object[]> tupla = super.executeQuery("select faucet.id_faucet, carteira.tx_descricao, carteira.tx_host, faucet.dt_proximaexecucao, faucet.vl_saldoatual from tb_faucet faucet inner join tb_carteira carteira on faucet.cd_carteira=carteira.id_carteira where carteira.fl_ativo=true order by faucet.dt_proximaexecucao asc");
+        List<Object[]> tupla = super.executeQuery("select faucet.id_faucet, carteira.tx_descricao, carteira.tx_host, usuario.tx_email, usuario.tx_senha, faucet.dt_proximaexecucao, faucet.vl_saldoatual from tb_faucet faucet inner join tb_usuario usuario on faucet.cd_usuario=usuario.id_usuario inner join tb_carteira carteira on faucet.cd_carteira=carteira.id_carteira where faucet.fl_ativo=true order by faucet.dt_proximaexecucao asc");
         List<FaucetProjection> faucetProjections = new ArrayList<>();
 
         if (tupla.isEmpty()) {
@@ -113,8 +89,10 @@ public class FaucetRepository extends AbstractRepository {
             faucetProjection.setCodigoFaucet((Integer) conf[0]);
             faucetProjection.setCarteira((String) conf[1]);
             faucetProjection.setHost((String) conf[2]);
-            faucetProjection.setDataExecucao((String) conf[3]);
-            faucetProjection.setSaldoAtual(Double.valueOf(conf[4].toString()));
+            faucetProjection.setEmail((String) conf[3]);
+            faucetProjection.setSenha((String) conf[4]);
+            faucetProjection.setDataExecucao((String) conf[5]);
+            faucetProjection.setSaldoAtual(Double.valueOf(conf[6].toString()));
 
             faucetProjections.add(faucetProjection);
         }
@@ -122,20 +100,43 @@ public class FaucetRepository extends AbstractRepository {
     }
 
 
-    public Date obterTempoExecucao() {
-        List<Object[]> tupla = super.executeQuery("select faucet.dt_proximaexecucao from tb_faucet faucet inner join tb_carteira carteira on faucet.cd_carteira=carteira.id_carteira where carteira.fl_ativo=true order by faucet.dt_proximaexecucao asc");
+    public FaucetProjection obterFaucet(Integer codigoFaucet) {
 
-        if (!tupla.isEmpty()) {
+        List<Object[]> tupla = super.executeQuery("select faucet.id_faucet, carteira.tx_descricao, carteira.tx_host, usuario.tx_email, usuario.tx_senha, faucet.dt_proximaexecucao, faucet.vl_saldoatual from tb_faucet faucet inner join tb_usuario usuario on faucet.cd_usuario=usuario.id_usuario inner join tb_carteira carteira on faucet.cd_carteira=carteira.id_carteira where faucet.fl_ativo=true and faucet.id_faucet=" + codigoFaucet);
 
-            try {
-                return simpleDateFormat.parse(tupla.get(0)[0].toString());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+        if (tupla.isEmpty()) {
+            return null;
         }
 
-        return new Date();
+        Object[] conf = tupla.get(0);
+
+        FaucetProjection faucetProjection = new FaucetProjection();
+        faucetProjection.setCodigoFaucet((Integer) conf[0]);
+        faucetProjection.setCarteira((String) conf[1]);
+        faucetProjection.setHost((String) conf[2]);
+        faucetProjection.setEmail((String) conf[3]);
+        faucetProjection.setSenha((String) conf[4]);
+        faucetProjection.setDataExecucao((String) conf[5]);
+        faucetProjection.setSaldoAtual(Double.valueOf(conf[6].toString()));
+
+        return faucetProjection;
     }
 
 
+    public List<Integer> obterTodosFaucets() {
+
+        List<Object[]> tupla = super.executeQuery("select id_faucet from tb_faucet");
+        List<Integer> results = new ArrayList<>();
+
+        if (tupla.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        for (int i = 0; i < tupla.size(); i++) {
+            Object[] conf = tupla.get(i);
+
+            results.add((Integer) conf[0]);
+        }
+        return results;
+    }
 }

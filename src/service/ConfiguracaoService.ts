@@ -21,4 +21,9 @@ export default class ConfiguracaoService {
 
         return await this.configuracaoRepository.save(Configuracao.BuilderWhithProps(configuracao))
     }
+
+    public async atualizarServidor(servidor: string): Promise<any> {
+
+        return await this.configuracaoRepository.atualizarServidor(servidor)
+    }
 }

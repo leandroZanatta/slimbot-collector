@@ -20,10 +20,12 @@ public class FaucetApiClient {
     private final String host;
     private final int faucetId;
     private final OkHttpClient client = new OkHttpClient();
+
     public FaucetApiClient(String host, int faucetId) {
         this.host = host;
         this.faucetId = faucetId;
     }
+
     public DadosPaginaVO obterDadosPagina() throws IOException {
 
         Request.Builder builder = createDefaultBuilderHeaders()//
@@ -36,7 +38,11 @@ public class FaucetApiClient {
 
         CookieStorage.updateCookies(response, this.faucetId);
 
-        return SiteDataUtil.obterDadosPagina(response.body().string());
+        DadosPaginaVO dadosPaginaVO = SiteDataUtil.obterDadosPagina(response.body().string());
+
+        response.close();
+
+        return dadosPaginaVO;
     }
 
     public int efetuarLogin(DadosPaginaVO dadosPagina, String uuid, String email, String senha) throws IOException, JSONException {
@@ -60,6 +66,8 @@ public class FaucetApiClient {
 
         JSONObject retorno = new JSONObject(dados);
 
+        response.close();
+
         if (retorno.has("success") && retorno.getBoolean("success")) {
 
             CookieStorage.updateCookies(response, this.faucetId);
@@ -69,7 +77,7 @@ public class FaucetApiClient {
 
         if (retorno.has("message") && retorno.getString("message").equals("CSRF token mismatch.")) {
 
-            CookieStorage.removeCookiesStorage( this.faucetId);
+            CookieStorage.removeCookiesStorage(this.faucetId);
             CookieStorage.updateCookies(response, this.faucetId);
 
             return -1;
@@ -99,6 +107,8 @@ public class FaucetApiClient {
         String dados = response.body().string();
 
         JSONObject retorno = new JSONObject(dados);
+
+        response.close();
 
         resultsCollectorVO.setStatus(retorno.getBoolean("status"));
 

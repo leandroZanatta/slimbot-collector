@@ -21,12 +21,12 @@ public class ExecucaoFaucetRepository extends AbstractRepository {
                     SQLiteDatabase.OPEN_READWRITE);
 
             ContentValues contentValues = new ContentValues();
-            contentValues.put("cd_faucet",execucaoFaucet.getCodigoFaucet());
+            contentValues.put("cd_faucet", execucaoFaucet.getCodigoFaucet());
             contentValues.put("dt_execucao", execucaoFaucet.getDataExecucaoStr());
             contentValues.put("vl_roll", execucaoFaucet.getValorRoll());
 
 
-            checkDB.insert("tb_execucaofaucet","id_execucaofaucet",contentValues);
+            checkDB.insert("tb_execucaofaucet", "id_execucaofaucet", contentValues);
         } catch (SQLiteException e) {
             e.printStackTrace();
         } finally {

@@ -22,6 +22,16 @@ class Faucet extends MetaData<IFaucetProps> {
         return this;
     }
 
+    public ativo(ativo: boolean): Faucet {
+        this.setProperty('ativo', ativo);
+        return this;
+    }
+
+    public situacao(situacao: number): Faucet {
+        this.setProperty('situacao', situacao);
+        return this;
+    }
+
     public proximaExecucao(proximaExecucao: Date): Faucet {
         this.setProperty('proximaExecucao', moment(proximaExecucao).format('YYYY-MM-DD HH:mm:ss'));
         return this;

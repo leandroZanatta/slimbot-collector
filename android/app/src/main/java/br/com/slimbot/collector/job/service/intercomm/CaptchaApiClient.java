@@ -8,6 +8,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class CaptchaApiClient {
     private final OkHttpClient client = new OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS)
@@ -25,7 +26,20 @@ public class CaptchaApiClient {
                 .method("POST", body)//
                 .addHeader("Content-Type", "application/json").build();
 
-        return client.newCall(request).execute().body().string();
+        Response response = client.newCall(request).execute();
+
+        if (response.code() != 200) {
+
+            throw new RuntimeException("Não foi possível resolver captcha");
+        }
+
+        String uuid = response.body().string();
+
+        response.close();
+
+        return uuid;
+
+
     }
 
 }

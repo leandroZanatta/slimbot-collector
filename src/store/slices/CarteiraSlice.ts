@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ICarteiraProps } from '../../repository/model/carteira/Carteira.meta';
+import { IFaucetCarteiraProps } from '../../repository/model/carteira/Carteira.meta';
 import { buscarCarteirasBuilderAsync } from '../thunk/CarteiraThunk';
 
 export interface IInitialStateCarteira {
-  carteiras: Array<ICarteiraProps>
-  carteira: ICarteiraProps | null
+  carteiras: Array<IFaucetCarteiraProps>
+  carteira: IFaucetCarteiraProps | null
   modalCarteiraAberta: boolean
 }
 
@@ -18,7 +18,7 @@ const slice = createSlice({
   name: 'carteira',
   initialState,
   reducers: {
-    selecionarCarteira: (state, action: PayloadAction<ICarteiraProps>) => {
+    selecionarCarteira: (state, action: PayloadAction<IFaucetCarteiraProps>) => {
       state.carteira = action.payload;
       state.modalCarteiraAberta = true;
     },

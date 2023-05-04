@@ -1,31 +1,34 @@
 import React, { useEffect } from "react";
-import useConfiguracao from "../hooks/useConfiguracao";
+import useUsuarios from "../hooks/useUsuarios";
 import useMigration from "../hooks/useMigrations";
 import LoadingScreen from "./components/Loading";
 import MigrationError from "./components/MigrationError";
-import ConfiguracaoBasicaScreen from "./configuracao/ConfiguracaoBasica";
+
 import HomeScreen from "./home/HomeScreen";
+import UsuarioScreen from "./usuarios/Usuarios";
+import { Provider } from "react-native-paper";
 
 
 const HomePage = () => {
     const { status } = useMigration();
-    const { configuracao, loading, buscarConfiguracao } = useConfiguracao();
+    const { usuarioSelecionado, loading, buscarUsuarios } = useUsuarios();
 
     useEffect(() => {
         if (status === 2) {
-            buscarConfiguracao();
+            buscarUsuarios();
         }
     }, [status]);
 
     return (
-        <>
+        <Provider>
             {loading ?
                 <LoadingScreen />
-                : configuracao == null ?
-                    <ConfiguracaoBasicaScreen /> :
-                    <HomeScreen />
+                : usuarioSelecionado != null && usuarioSelecionado.id !== null ?
+                    <HomeScreen /> :
+                    <UsuarioScreen />
+
             }
-        </>
+        </Provider>
     )
 }
 

@@ -5,6 +5,7 @@ import { IMetadataProps } from '../../types/RepositoryTypes';
 export interface IFaucetCarteiraProps {
     id: number;
     codigoCarteira: number;
+    codigoUsuario: number;
     carteira: string;
     proximaExecucao: string;
     saldoAtual: number;
@@ -17,6 +18,8 @@ export interface IFaucetProps {
     codigoUsuario: number;
     proximaExecucao: string;
     saldoAtual: number;
+    ativo: boolean;
+    situacao: number; //0 - NAO-VALIDADA, 1 - REGISTRADA, 2 - JA_REGISTRADO, 3 - VALIDADO, 4 - ERRO_AUTENTICACAO
 }
 
 export const faucetMetaData: IMetadataProps = {
@@ -41,6 +44,17 @@ export const faucetMetaData: IMetadataProps = {
         value: null,
         notNull: true
     }, {
+        alias: 'ativo',
+        name: 'fl_ativo',
+        field: DBTypes.BOOLEAN,
+        value: null,
+        notNull: true
+    }, {
+        alias: 'situacao',
+        name: 'fl_situacao',
+        field: DBTypes.NUMERIC_3_0,
+        value: null
+    }, {
         alias: 'proximaExecucao',
         name: 'dt_proximaexecucao',
         field: DBTypes.TIMESTAMP,
@@ -55,6 +69,6 @@ export const faucetMetaData: IMetadataProps = {
     }]),
     customMetaData: [
         'FOREIGN KEY(cd_carteira) REFERENCES tb_carteira(id_carteira)',
-        'FOREIGN KEY(cd_usuario) REFERENCES tb_configuracao(id_configuracao)'
+        'FOREIGN KEY(cd_usuario) REFERENCES tb_usuario(id_usuario)'
     ]
 }

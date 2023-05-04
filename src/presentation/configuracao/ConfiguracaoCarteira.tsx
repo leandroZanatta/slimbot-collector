@@ -1,14 +1,14 @@
 import React, { useEffect } from "react";
 import { Card, IconButton, Provider, Text } from "react-native-paper";
 import useCarteira from "../../hooks/useCarteira";
-import { ICarteiraProps } from "../../repository/model/carteira/Carteira.meta";
+import { IFaucetCarteiraProps } from "../../repository/model/carteira/Carteira.meta";
 import HeaderComponent from "../components/Header";
 import { Image, Linking, ScrollView, View } from 'react-native';
 import PTRView from 'react-native-pull-to-refresh';
 
 
 interface IcarteiraPanelProps {
-    carteira: ICarteiraProps
+    carteira: IFaucetCarteiraProps
     editarCarteira: any
     atualizarInfomacaoSite: any
 }
@@ -76,7 +76,7 @@ const ConfiguracaoCarteirasScreen = () => {
                 <PTRView onRefresh={buscarCarteiras}>
                     <ScrollView >
                         {
-                            carteiras.map((carteira: ICarteiraProps) =>
+                            carteiras.map((carteira: IFaucetCarteiraProps) =>
                                 <CarteiraPanel key={carteira.id} carteira={carteira} editarCarteira={editarCarteira} atualizarInfomacaoSite={atualizarInfomacaoSite} />)
                         }
                     </ScrollView>

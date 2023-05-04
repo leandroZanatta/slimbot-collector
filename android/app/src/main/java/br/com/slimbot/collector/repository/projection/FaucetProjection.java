@@ -12,15 +12,21 @@ public class FaucetProjection {
     private int codigoFaucet;
     private String carteira;
     private String host;
+    private String email;
+    private String senha;
     private String dataExecucao;
     private Double saldoAtual;
+
     public FaucetProjection() {
 
     }
-    public FaucetProjection(int codigoFaucet, String carteira, String host, String dataExecucao, Double saldoAtual) {
+
+    public FaucetProjection(int codigoFaucet, String carteira, String host, String email, String senha, String dataExecucao, Double saldoAtual) {
         this.codigoFaucet = codigoFaucet;
         this.carteira = carteira;
         this.host = host;
+        this.email = email;
+        this.senha = senha;
         this.dataExecucao = dataExecucao;
         this.saldoAtual = saldoAtual;
     }
@@ -76,5 +82,21 @@ public class FaucetProjection {
     @Override
     public String toString() {
         return String.format("{codigoFaucet: %s, carteira:%s, host:%s, dataExecucao:%s, saldoAtual:%s}", codigoFaucet, carteira, host, dataExecucao, saldoAtual);
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

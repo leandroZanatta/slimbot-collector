@@ -7,8 +7,9 @@ import { DeviceEventEmitter, ScrollView, View } from "react-native";
 import { BarChart } from "react-native-chart-kit";
 import { Dimensions } from "react-native";
 import { ICotacaoAtivo } from "../../types/CotacaoAtivo";
-import { Button } from "react-native-paper";
-import useModuloNativo from "../../hooks/useModuloNativo";
+import useUsuarios from "../../hooks/useUsuarios";
+
+
 
 const screenWidth = Dimensions.get("window").width - 20;
 const chartConfig = {

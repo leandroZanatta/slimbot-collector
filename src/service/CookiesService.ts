@@ -46,9 +46,7 @@ export default class CookiesService {
 
             if (item) {
 
-                const retorno: Array<string> = JSON.parse(item);
-
-                return retorno;
+                return JSON.parse(item);
             }
 
         } catch (e) {

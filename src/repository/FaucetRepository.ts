@@ -9,6 +9,14 @@ export default class FaucetRepository extends AbstractRepository<IFaucetProps> {
         super(db);
     }
 
+    public async atualizarSituacaoFaucet(codigoFaucet: number, ativo: boolean, situacao: number): Promise<void> {
+
+        await this.doUpdate([{
+            sql: 'update tb_faucet set fl_ativo=?, fl_situacao=? where id_faucet=?',
+            args: [ativo, situacao, codigoFaucet]
+        }]);
+    }
+
     public async atualizarDadosFaucet(codigoCarteira: number, proximaExecucao: Date, valorBalanco: number) {
 
         await this.doUpdate([{
@@ -41,14 +49,13 @@ export default class FaucetRepository extends AbstractRepository<IFaucetProps> {
         });
     }
 
-    public async buscarFaucetsCarteira(): Promise<Array<IFaucetCarteiraProps>> {
-
+    public async buscarFaucetsCarteira(cdUsuario: number): Promise<Array<IFaucetCarteiraProps>> {
+       
         return new Promise((resolve, reject) => {
             this.db.exec([{
-                sql: 'select faucet.id_faucet as id,carteira.tx_descricao as carteira, faucet.dt_proximaexecucao as proximaExecucao, faucet.vl_saldoatual as saldoAtual, carteira.id_carteira as codigoCarteira, (faucet.vl_saldoatual/carteira.vl_saldoresgate)*100 as percentual  from tb_faucet faucet inner join tb_carteira carteira on faucet.cd_carteira=carteira.id_carteira where carteira.fl_ativo=? order by faucet.dt_proximaexecucao asc',
-                args: [true]
+                sql: 'select faucet.id_faucet as id,carteira.tx_descricao as carteira, faucet.dt_proximaexecucao as proximaExecucao, faucet.vl_saldoatual as saldoAtual, carteira.id_carteira as codigoCarteira, (faucet.vl_saldoatual/carteira.vl_saldoresgate)*100 as percentual  from tb_faucet faucet inner join tb_carteira carteira on faucet.cd_carteira=carteira.id_carteira where faucet.fl_ativo=? and faucet.cd_usuario=? order by faucet.dt_proximaexecucao asc',
+                args: [true, cdUsuario]
             },], false, (error, results) => {
-
                 if (error || !results || this.isResultSetError(results[0])) {
                     reject(`Não foi possível consultar o objeto - ${error}`);
 

@@ -2,11 +2,11 @@ import { createSlice } from '@reduxjs/toolkit';
 import * as SQLite from "expo-sqlite";
 import { WebSQLDatabase } from 'expo-sqlite';
 
-export interface IInitialStateConfiguracao {
+export interface IInitialStateDb {
   db: WebSQLDatabase
 }
 
-const initialState: IInitialStateConfiguracao = {
+const initialState: IInitialStateDb = {
   db: SQLite.openDatabase("collector.db", "1")
 };
 

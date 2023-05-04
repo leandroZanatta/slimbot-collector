@@ -35,7 +35,6 @@ const FaucetsScreen = () => {
     };
 
     useEffect(() => {
-
         const subscription = DeviceEventEmitter.addListener('faucetCollected', onFaucetAtualizado);
 
         buscarFaucets();
@@ -43,7 +42,6 @@ const FaucetsScreen = () => {
         return () => {
             subscription.remove();
         }
-
     }, [])
 
 

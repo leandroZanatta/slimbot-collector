@@ -1,18 +1,19 @@
-import axios from 'axios';
-import { ICarteiraProps } from "../repository/model/carteira/Carteira.meta";
-import CaptchaService from './CaptchaService';
+import axios, { AxiosResponse } from 'axios';
+import { stringify } from "qs-native";
+import { IFaucetCarteiraProps } from "../repository/model/carteira/Carteira.meta";
 import CookiesService from './CookiesService';
+import { IUsuarioProps } from '../repository/model/usuario/Usuario.meta';
 
 export default class CadastroService {
 
     private headers: any;
-    private carteira: ICarteiraProps;
-    private captchaService: CaptchaService;
+    private carteira: IFaucetCarteiraProps;
+    private usuario: IUsuarioProps;
     private cookiesService: CookiesService;
 
-    constructor(carteira: ICarteiraProps) {
+    constructor(carteira: IFaucetCarteiraProps, usuario: IUsuarioProps) {
         this.carteira = carteira;
-        this.captchaService = new CaptchaService();
+        this.usuario = usuario;
         this.cookiesService = new CookiesService();
 
         this.headers = {
@@ -30,7 +31,7 @@ export default class CadastroService {
         }
     }
 
-    public async efetuarCadastro(): Promise<number> {
+    public async obterPaginaCadastro(): Promise<AxiosResponse<any>> {
 
         let configGetCadastroPage = {
             method: 'get',
@@ -42,53 +43,87 @@ export default class CadastroService {
 
         const response = await axios.request(configGetCadastroPage)
 
-        const sitekey: string = this.getSiteKey(response.data);
-        const crsfToken: string = this.getCrsfToken(response.data);
+        this.cookiesService.setCookiesStorage(this.carteira.host, response.headers['set-cookie']);
+
+        return response;
+
+    }
+
+    public async efetuarCadastro(crsfToken: string, tokenCaptcha: string): Promise<AxiosResponse<any>> {
+
+        let config = {
+            method: 'post',
+            url: `https://${this.carteira.host}/register`,
+            headers: {
+                ...this.headers,
+                'X-CSRF-TOKEN': crsfToken,
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'Accept': 'application/json, text/javascript, */*; q=0.01',
+                "Cookie": await this.cookiesService.getCookiesStorage(this.carteira.host)
+            },
+            data: stringify({
+                email: this.usuario.email,
+                password: this.usuario.senha,
+                "password_confirmation": this.usuario.senha,
+                "h-captcha-response": tokenCaptcha
+            })
+        };
+
+        const response = await axios.request(config)
 
         this.cookiesService.setCookiesStorage(this.carteira.host, response.headers['set-cookie']);
 
-        const tokenCaptcha = await this.captchaService.obterCaptcha({
-            host: this.carteira.host,
-            siteKey: sitekey,
-        })
+        return response;
+    }
 
-        let configRegister = {
-            method: 'get',
-            url: this.carteira.refer,
-            headers: this.headers
+    public async efetuarLogin(crsfToken: string, tokenCaptcha: string): Promise<AxiosResponse<any>> {
+
+        let config = {
+            method: 'post',
+            url: `https://${this.carteira.host}/login`,
+            headers: {
+                ...this.headers,
+                'X-CSRF-TOKEN': crsfToken,
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'Accept': 'application/json, text/javascript, */*; q=0.01',
+                "Cookie": await this.cookiesService.getCookiesStorage(this.carteira.host)
+            },
+            data: stringify({
+                email: this.usuario.email,
+                password: this.usuario.senha,
+                "h-captcha-response": tokenCaptcha
+            })
         };
 
-        const responseRegister = await axios.request(configRegister)
+        const response = await axios.request(config)
 
+        this.cookiesService.setCookiesStorage(this.carteira.host, response.headers['set-cookie']);
 
-
-        return 1;
+        return response;
     }
 
-    private getSiteKey(data: string): string {
+    public async obterPaginaInicial(): Promise<AxiosResponse<any>> {
 
-        const strIndex: string = "sitekey: '";
+        let config = {
+            method: 'get',
+            url: `https://${this.carteira.host}`,
+            headers: {
+                ...this.headers,
+                "Accept": 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                "Cookie": await this.cookiesService.getCookiesStorage(this.carteira.host)
+            }
+        };
 
-        const indexInicial: number = data.indexOf(strIndex);
+        const response = await axios.request(config)
 
-        return data.substring((indexInicial + strIndex.length), data.indexOf("',", indexInicial)).trim();
+        this.cookiesService.setCookiesStorage(this.carteira.host, response.headers['set-cookie']);
+
+        return response;
     }
 
 
-    private getCrsfToken(data: string): string {
 
-        const strIndex: string = "<meta name=\"csrf-token\" content=\"";
 
-        const indexInicial: number = data.indexOf(strIndex);
-
-        const retorno: string = data.substring((indexInicial + strIndex.length), data.indexOf("/>", indexInicial) - 1);
-
-        if (retorno.endsWith("\"")) {
-            return retorno.substring(0, retorno.length - 1);
-        }
-
-        return retorno;
-    }
 
 
 

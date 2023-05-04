@@ -19,8 +19,8 @@ import br.com.slimbot.collector.repository.projection.FaucetProjection;
 public class CollectorGroupService {
     private final static String LOG_TAG = "CollectorGroupService";
 
-    private final String dbPath;
     private final FaucetRepository faucetRepository;
+
     private final ConfiguracaoRepository configuracaoRepository;
 
     private final ExecucaoFaucetRepository execucaoFaucetRepository;
@@ -28,7 +28,6 @@ public class CollectorGroupService {
     private final CollectorListener collectorListener;
 
     public CollectorGroupService(String dbPath, CollectorListener collectorListener) {
-        this.dbPath = dbPath;
         this.faucetRepository = new FaucetRepository(dbPath);
         this.configuracaoRepository = new ConfiguracaoRepository(dbPath);
         this.execucaoFaucetRepository = new ExecucaoFaucetRepository(dbPath);

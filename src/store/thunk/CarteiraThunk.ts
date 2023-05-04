@@ -1,13 +1,19 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from "@reduxjs/toolkit";
 import { WebSQLDatabase } from "expo-sqlite";
-import { ICarteiraProps } from "../../repository/model/carteira/Carteira.meta";
+import { IFaucetCarteiraProps } from "../../repository/model/carteira/Carteira.meta";
 import CarteiraService from "../../service/CarteiraService";
 import { IInitialStateCarteira } from "../slices/CarteiraSlice";
 
+interface IDadosCarteiraUsuariosProps {
+  db: WebSQLDatabase;
+  codigoUsuario: number;
+}
+
+
 export const buscarCarteirasThunk = createAsyncThunk(
   'carteira/buscarCarteiras',
-  async (db: WebSQLDatabase): Promise<Array<ICarteiraProps>> => {
-    return await new CarteiraService(db).buscarCarteiras();
+  async ({ db, codigoUsuario }: IDadosCarteiraUsuariosProps): Promise<Array<IFaucetCarteiraProps>> => {
+    return await new CarteiraService(db).buscarCarteiras(codigoUsuario);
   }
 );
 
