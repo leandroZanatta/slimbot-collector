@@ -9,17 +9,19 @@ interface IDadosCarteiraUsuariosProps {
   codigoUsuario: number;
 }
 
-
 export const buscarCarteirasThunk = createAsyncThunk(
-  'carteira/buscarCarteiras',
-  async ({ db, codigoUsuario }: IDadosCarteiraUsuariosProps): Promise<Array<IFaucetCarteiraProps>> => {
+  "carteira/buscarCarteiras",
+  async ({
+    db,
+    codigoUsuario,
+  }: IDadosCarteiraUsuariosProps): Promise<Array<IFaucetCarteiraProps>> => {
     return await new CarteiraService(db).buscarCarteiras(codigoUsuario);
   }
 );
 
-
-export const buscarCarteirasBuilderAsync = (builder: ActionReducerMapBuilder<IInitialStateCarteira>) => {
-
+export const buscarCarteirasBuilderAsync = (
+  builder: ActionReducerMapBuilder<IInitialStateCarteira>
+) => {
   builder.addCase(buscarCarteirasThunk.fulfilled, (state, action) => {
     state.carteiras = action.payload;
   });

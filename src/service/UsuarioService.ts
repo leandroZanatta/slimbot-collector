@@ -9,45 +9,61 @@ import { ICarteiraProps } from "../repository/model/carteira/Carteira.meta";
 import Faucet from "../repository/model/faucet/Faucet";
 
 export default class UsuarioService {
+  private usuarioRepository: UsuarioRepository;
+  private db: WebSQLDatabase;
 
-    private usuarioRepository: UsuarioRepository;
-    private db: WebSQLDatabase;
+  constructor(db: WebSQLDatabase) {
+    this.usuarioRepository = new UsuarioRepository(db);
+    this.db = db;
+  }
 
-    constructor(db: WebSQLDatabase) {
-        this.usuarioRepository = new UsuarioRepository(db);
-        this.db = db;
+  public async buscar(): Promise<Array<IUsuarioProps>> {
+    return await this.usuarioRepository.list(Usuario.Builder());
+  }
+
+  public async alterarSituacaoUsuario(codigoUsuario: number): Promise<void> {
+    await this.usuarioRepository.alterarSituacaoUsuario(codigoUsuario);
+  }
+
+  public async salvar(
+    usuario: Usuario,
+    ativo: boolean
+  ): Promise<IUsuarioProps> {
+    const carteiraRepository: CarteiraRepository = new CarteiraRepository(
+      this.db
+    );
+    const faucetRepository: FaucetRepository = new FaucetRepository(this.db);
+
+    const usuariosRegistrados = await this.buscar();
+
+    if (usuariosRegistrados.length == 0) {
+      usuario.principal("S");
     }
 
-    public async buscar(): Promise<Array<IUsuarioProps>> {
-
-        return await this.usuarioRepository.list(Usuario.Builder());
+    if (usuario.getValues().id != null) {
+      return await this.usuarioRepository.update(usuario);
     }
 
-    public async alterarSituacaoUsuario(codigoUsuario: number): Promise<void> {
+    const novoUsuario: IUsuarioProps = await this.usuarioRepository.save(
+      usuario
+    );
 
-        await this.usuarioRepository.alterarSituacaoUsuario(codigoUsuario);
-    }
+    const carteiras: Array<ICarteiraProps> = await carteiraRepository.list(
+      Carteira.Builder()
+    );
 
-    public async salvar(usuario: Usuario, ativo: boolean): Promise<IUsuarioProps> {
+    carteiras.forEach((carteira) => {
+      faucetRepository.save(
+        Faucet.Builder()
+          .codigoCarteira(carteira.id)
+          .codigoUsuario(novoUsuario.id)
+          .proximaExecucao(new Date())
+          .saldoAtual(0)
+          .ativo(ativo)
+          .situacao(ativo ? 3 : 0)
+      );
+    });
 
-        const carteiraRepository: CarteiraRepository = new CarteiraRepository(this.db);
-        const faucetRepository: FaucetRepository = new FaucetRepository(this.db);
-
-
-        const usuariosRegistrados = await this.buscar();
-
-        if (usuariosRegistrados.length == 0) {
-
-            usuario.principal('S');
-        }
-
-        const novoUsuario: IUsuarioProps = await this.usuarioRepository.save(usuario);
-        const carteiras: Array<ICarteiraProps> = await carteiraRepository.list(Carteira.Builder());
-
-        carteiras.forEach(carteira => {
-            faucetRepository.save(Faucet.Builder().codigoCarteira(carteira.id).codigoUsuario(novoUsuario.id).proximaExecucao(new Date()).saldoAtual(0).ativo(ativo).situacao(ativo ? 3 : 0));
-        });
-
-        return novoUsuario;
-    }
+    return novoUsuario;
+  }
 }

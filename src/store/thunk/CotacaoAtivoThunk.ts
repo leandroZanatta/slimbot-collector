@@ -10,52 +10,66 @@ import { IInitialStateCotacaoAtivo } from "../slices/CotacaoAtivoSlice";
 import Carteira from "../../repository/model/carteira/Carteira";
 import { IFaucetProps } from "../../repository/model/faucet/Faucet.meta";
 
-
 interface IDadosCotacaoUsuariosProps {
   db: WebSQLDatabase;
   codigoUsuario: number;
 }
 
 export const buscarCotacaoAtivos = createAsyncThunk(
-  'cotacaoAtivo/buscarCotacaoAtivos',
-  async ({ db, codigoUsuario }: IDadosCotacaoUsuariosProps): Promise<Array<ICotacaoAtivo>> => {
+  "cotacaoAtivo/buscarCotacaoAtivos",
+  async ({
+    db,
+    codigoUsuario,
+  }: IDadosCotacaoUsuariosProps): Promise<Array<ICotacaoAtivo>> => {
 
-
-    const carteiras: Array<ICarteiraProps> = await new CarteiraRepository(db).list(Carteira.Builder());
-    const faucets = await new FaucetRepository(db).list(Faucet.Builder().codigoUsuario(codigoUsuario));
-    const cotacoes = await new CotacaoAtivoService().buscarCotacaoAtivos(carteiras.map(carteira => carteira.uuid).join('%2C'));
+    const carteiras: Array<ICarteiraProps> = await new CarteiraRepository(
+      db
+    ).list(Carteira.Builder());
+    const faucets = await new FaucetRepository(db).list(
+      Faucet.Builder().codigoUsuario(codigoUsuario)
+    );
+    const cotacoes = await new CotacaoAtivoService().buscarCotacaoAtivos(
+      carteiras.map((carteira) => carteira.uuid).join("%2C")
+    );
     const dadosCotacao: Array<ICotacaoAtivo> = [];
 
-
-    carteiras.forEach(carteira => {
-
-      const faucetAtual = faucets.filter(faucet => faucet.codigoCarteira === carteira.id);
+    carteiras.forEach((carteira) => {
+      const faucetAtual = faucets.filter(
+        (faucet) => faucet.codigoCarteira === carteira.id
+      );
       const cotacaoAtual = cotacoes[carteira.uuid];
 
       dadosCotacao.push({
         carteira: carteira,
-        quantidade: faucetAtual.length > 0 ? faucetAtual.map((item: IFaucetProps) => item.saldoAtual).reduce((anterior: number, atual: number) => anterior += atual) : 0,
-        preco: cotacaoAtual ? cotacaoAtual.brl : 0
-      })
+        quantidade:
+          faucetAtual.length > 0
+            ? faucetAtual
+                .map((item: IFaucetProps) => item.saldoAtual)
+                .reduce(
+                  (anterior: number, atual: number) => (anterior += atual)
+                )
+            : 0,
+        preco: cotacaoAtual ? cotacaoAtual.brl : 0,
+      });
     });
 
     return dadosCotacao;
   }
 );
 
-export const buscarCotacaoAtivoBuilderAsync = (builder: ActionReducerMapBuilder<IInitialStateCotacaoAtivo>) => {
+export const buscarCotacaoAtivoBuilderAsync = (
+  builder: ActionReducerMapBuilder<IInitialStateCotacaoAtivo>
+) => {
   builder.addCase(buscarCotacaoAtivos.pending, (state) => {
-    state.loading = true
+    state.loading = true;
   });
 
   builder.addCase(buscarCotacaoAtivos.fulfilled, (state, action) => {
     state.cotacoes = action.payload;
-    state.loading = false
+    state.loading = false;
   });
 
   builder.addCase(buscarCotacaoAtivos.rejected, (state) => {
-    state.loading = false
+    state.loading = false;
   });
 };
-
-

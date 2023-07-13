@@ -8,48 +8,50 @@ import HomeScreen from "./home/HomeScreen";
 import UsuarioScreen from "./usuarios/Usuarios";
 import { Provider } from "react-native-paper";
 
-
 const HomePage = () => {
-    const { status } = useMigration();
-    const { usuarioSelecionado, loading, buscarUsuarios } = useUsuarios();
+  const { status } = useMigration();
+  const { exibirUsuario, usuarioSelecionado, loading, buscarUsuarios } =
+    useUsuarios();
 
-    useEffect(() => {
-        if (status === 2) {
-            buscarUsuarios();
-        }
-    }, [status]);
+  useEffect(() => {
+    if (status === 2) {
+      buscarUsuarios();
+    }
+  }, [status]);
 
-    return (
-        <Provider>
-            {loading ?
-                <LoadingScreen />
-                : usuarioSelecionado != null && usuarioSelecionado.id !== null ?
-                    <HomeScreen /> :
-                    <UsuarioScreen />
-
-            }
-        </Provider>
-    )
-}
+  return (
+    <Provider>
+      {loading ? (
+        <LoadingScreen />
+      ) : usuarioSelecionado != null &&
+        usuarioSelecionado.id !== null &&
+        !exibirUsuario ? (
+        <HomeScreen />
+      ) : (
+        <UsuarioScreen />
+      )}
+    </Provider>
+  );
+};
 
 const ApplicationScreen = () => {
+  const { status, migrate } = useMigration();
 
-    const { status, migrate } = useMigration();
+  useEffect(() => {
+    migrate();
+  }, []);
 
-    useEffect(() => { migrate() }, []);
-
-    return (
-        <>
-            {
-                status < 2 ?
-                    <LoadingScreen /> :
-                    status === 2 ?
-                        <HomePage /> :
-                        <MigrationError />
-
-            }
-        </>
-    )
-}
+  return (
+    <>
+      {status < 2 ? (
+        <LoadingScreen />
+      ) : status === 2 ? (
+        <HomePage />
+      ) : (
+        <MigrationError />
+      )}
+    </>
+  );
+};
 
 export default ApplicationScreen;

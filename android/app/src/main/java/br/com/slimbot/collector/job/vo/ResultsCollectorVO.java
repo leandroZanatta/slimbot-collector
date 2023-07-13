@@ -59,4 +59,16 @@ public class ResultsCollectorVO {
     public void setProximoRoll(int proximoRoll) {
         this.proximoRoll = proximoRoll;
     }
+
+    @Override
+    public String toString() {
+        return "ResultsCollectorVO{" +
+                "status=" + status +
+                ", error='" + error + '\'' +
+                ", rollsPendentes=" + rollsPendentes +
+                ", coinsGanhos=" + coinsGanhos +
+                ", totalBalanco=" + totalBalanco +
+                ", proximoRoll=" + proximoRoll +
+                '}';
+    }
 }

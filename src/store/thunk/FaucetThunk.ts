@@ -15,35 +15,51 @@ interface IDadosFaucetUsuarioProps {
 }
 
 export const buscarFaucetsCarteiraThunk = createAsyncThunk(
-  'faucet/buscarFaucetsCarteira',
-  async ({ db, cdUsuario }: IDadosFaucetUsuarioProps): Promise<Array<IFaucetCarteiraProps>> => {
+  "faucet/buscarFaucetsCarteira",
+  async ({
+    db,
+    cdUsuario,
+  }: IDadosFaucetUsuarioProps): Promise<Array<IFaucetCarteiraProps>> => {
     return await new FaucetService(db).buscarFaucetsCarteira(cdUsuario);
   }
 );
 
 export const atualizarDadosFaucetCarteiraThunk = createAsyncThunk(
-  'faucet/atualizarDadosFaucetCarteira',
-  async ({ db, cdFaucet }: IDadosFaucetCarteiraProps): Promise<IFaucetCarteiraProps> => {
+  "faucet/atualizarDadosFaucetCarteira",
+  async ({
+    db,
+    cdFaucet,
+  }: IDadosFaucetCarteiraProps): Promise<IFaucetCarteiraProps> => {
     return await new FaucetService(db).buscarFaucetCarteiraPorId(cdFaucet);
   }
 );
 
-
-export const buscarFaucetsCarteiraBuilderAsync = (builder: ActionReducerMapBuilder<IInitialStateFaucet>) => {
-
+export const buscarFaucetsCarteiraBuilderAsync = (
+  builder: ActionReducerMapBuilder<IInitialStateFaucet>
+) => {
   builder.addCase(buscarFaucetsCarteiraThunk.fulfilled, (state, action) => {
     state.faucets = action.payload;
   });
 };
 
-export const atualizarDadosFaucetCarteiraBuilderAsync = (builder: ActionReducerMapBuilder<IInitialStateFaucet>) => {
+export const atualizarDadosFaucetCarteiraBuilderAsync = (
+  builder: ActionReducerMapBuilder<IInitialStateFaucet>
+) => {
+  builder.addCase(
+    atualizarDadosFaucetCarteiraThunk.fulfilled,
+    (state, action) => {
+      state.faucets = state.faucets.map((item) => {
+        if (item.id == action.payload.id) {
+          return action.payload;
+        }
+        return item;
+      });
 
-  builder.addCase(atualizarDadosFaucetCarteiraThunk.fulfilled, (state, action) => {
-    state.faucets = state.faucets.map(item => {
-      if (item.id == action.payload.id) {
-        return action.payload
-      }
-      return item;
-    })
-  });
+      state.faucets.sort(
+        (p1, p2) =>
+          new Date(p1.proximaExecucao).getTime() -
+          new Date(p2.proximaExecucao).getTime()
+      );
+    }
+  );
 };

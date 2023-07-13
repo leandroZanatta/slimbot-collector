@@ -26,6 +26,12 @@ public class CookieStorage {
     private static File cookiesFile;
     private static Map<Integer, Map<String, String>> cookies = new HashMap<>();
 
+    public static void clearCookiesStorage() {
+        cookies.clear();
+
+        storeCookies();
+    }
+
     public static void inserirCookies(Request.Builder builder, Integer codigoFaucet) {
 
         Collection<String> cookies = CookieStorage.getCookiesStorage(codigoFaucet).values();
@@ -49,7 +55,7 @@ public class CookieStorage {
         }
     }
 
-    private static void setCookiesStorage(Integer faucet, List<String> cookiesSite) {
+    public static void setCookiesStorage(Integer faucet, List<String> cookiesSite) {
 
         Map<String, String> cookiesAtuais = getCookiesStorage(faucet);
 
@@ -59,9 +65,11 @@ public class CookieStorage {
 
             for (int j = 0; j < cookiesSplit.length; j++) {
 
-                String key = cookiesSplit[j].trim().split("=")[0].trim();
+                    String key = cookiesSplit[j].trim().split("=")[0].trim();
 
-                cookiesAtuais.put(key, cookiesSplit[j].trim());
+                    if (!cookiesAtuais.containsKey(key) || !cookiesAtuais.get(key).equals(cookiesSplit[j].trim())) {
+                        cookiesAtuais.put(key, cookiesSplit[j].trim());
+                    }
             }
         }
 
@@ -94,7 +102,9 @@ public class CookieStorage {
     }
 
     public static void defineLocalPath(File folder) {
+
         if (cookiesFile == null) {
+
             cookiesFile = new File(folder, "cookies.json");
 
             Log.i(LOG_TAG, "Obtendo configuração de cookies: " + cookiesFile.getAbsolutePath());
@@ -114,9 +124,9 @@ public class CookieStorage {
 
                     String cookiesData = FileUtils.readFileToString(cookiesFile, StandardCharsets.UTF_8);
 
-                    Log.i(LOG_TAG, cookiesData);
-
                     JSONObject jsonObject = new JSONObject(cookiesData);
+
+                    Log.i(LOG_TAG, jsonObject.toString(4));
 
                     Iterator<String> faucets = jsonObject.keys();
 

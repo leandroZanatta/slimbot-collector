@@ -1,17 +1,18 @@
-
 import { NativeModules } from "react-native";
 
 export default function useModuloNativo() {
+  const { Collector } = NativeModules;
 
-    const { Collector } = NativeModules;
+  const iniciarColeta = () => {
+    Collector.iniciarWorker();
+  };
 
-    const iniciarColeta = () => {
-        debugger
-        Collector.iniciarWorker();
-    }
+  const forcarSincronizacao = async () => {
+    await Collector.forcarSincronizacao();
+  };
 
-
-    return {
-        iniciarColeta
-    }
+  return {
+    forcarSincronizacao,
+    iniciarColeta,
+  };
 }

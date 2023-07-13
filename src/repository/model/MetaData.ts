@@ -1,95 +1,116 @@
-
 import { Query } from "expo-sqlite/build/SQLite.types";
 import { mapMetaDataToProperty } from "../../utilitarios/RepoPropertyMap";
 import { mapType } from "../types/DBTypes";
 import { IMetadataProps } from "../types/RepositoryTypes";
 
 export abstract class MetaData<T> {
+  protected props: IMetadataProps;
 
-    protected props: IMetadataProps;
+  constructor(props: IMetadataProps) {
+    this.props = props;
+  }
 
-    constructor(props: IMetadataProps) {
-        this.props = props;
+  protected setProperty(field: string, value: any) {
+    let column = this.props.columns.get(field);
+
+    if (column) {
+      column.value = value;
+    }
+  }
+
+  private mapColumns(): string {
+    let columns: Array<string> = [];
+
+    this.props.columns.forEach((value) =>
+      columns.push(`${value.name} ${mapType(value.field)}`)
+    );
+
+    if (this.props.customMetaData) {
+      this.props.customMetaData.forEach((custom) => columns.push(custom));
     }
 
-    protected setProperty(field: string, value: any) {
-        let column = this.props.columns.get(field);
+    return columns.join(", \n");
+  }
 
-        if (column) {
-            column.value = value;
-        }
-    }
+  public setId(value: any) {
+    this.setProperty(this.props.idProp, value);
+  }
 
-    private mapColumns(): string {
+  public getValues(): T {
+    return mapMetaDataToProperty(this.props);
+  }
 
-        let columns: Array<string> = [];
+  public getSelect(): Query {
+    let args: Array<any> = [];
+    let where: Array<string> = [];
+    let cols: Array<string> = [];
 
-        this.props.columns.forEach((value) => columns.push(`${value.name} ${mapType(value.field)}`));
+    this.props.columns.forEach((column) => {
+      cols.push(`${column.name} as ${column.alias}`);
 
-        if (this.props.customMetaData) {
-            this.props.customMetaData.forEach(custom => columns.push(custom));
-        }
+      if (column.value != null) {
+        where.push(`${column.name}=?`);
+        args.push(column.value);
+      }
+    });
 
-        return columns.join(', \n');
-    }
+    return {
+      sql: `SELECT ${cols.join(",")} FROM ${this.props.table}${
+        where.length > 0 ? ` where ${where.join("and ")}` : ""
+      } `,
+      args: args,
+    };
+  }
 
-    public setId(value: any) {
-        this.setProperty(this.props.idProp, value);
-    }
+  public getUpdate(): Query {
+    let args: Array<any> = [];
+    let cols: Array<string> = [];
 
-    public getValues(): T {
-        return mapMetaDataToProperty(this.props);
-    }
+    this.props.columns.forEach((column) => {
+      if (!column.field.ai) {
+        cols.push(column.name);
+        args.push(column.value);
+      }
+    });
 
-    public getSelect(): Query {
+    args.push(this.props.columns.get(this.props.idProp)!.value);
 
-        let args: Array<any> = [];
-        let where: Array<string> = [];
-        let cols: Array<string> = [];
+    return {
+      sql: `UPDATE ${this.props.table} SET ${cols
+        .map((item) => `${item}=?`)
+        .join(", ")} where ${
+        this.props.columns.get(this.props.idProp)!.name
+      }=?`,
+      args: args,
+    };
+  }
 
-        this.props.columns.forEach((column) => {
+  public getInsert(): Query {
+    let args: Array<any> = [];
+    let cols: Array<string> = [];
 
-            cols.push(`${column.name} as ${column.alias}`);
+    this.props.columns.forEach((column) => {
+      if (!column.field.ai) {
+        cols.push(column.name);
+        args.push(column.value);
+      }
+    });
 
-            if (column.value != null) {
-                where.push(`${column.name}=?`);
-                args.push(column.value);
-            }
-        });
+    return {
+      sql: `INSERT INTO ${this.props.table} (${cols.join(", ")}) VALUES (${cols
+        .map((item) => "?")
+        .join(", ")})`,
+      args: args,
+    };
+  }
 
-        return {
-            sql: `SELECT ${cols.join(',')} FROM ${this.props.table}${where.length > 0 ? ` where ${where.join('and ')}` : ''} `,
-            args: args
-        }
-    }
+  public getDDL(): Array<string> {
+    let ddl = [];
 
-    public getInsert(): Query {
-
-        let args: Array<any> = [];
-        let cols: Array<string> = [];
-
-        this.props.columns.forEach((column) => {
-
-            if (!column.field.ai) {
-                cols.push(column.name);
-                args.push(column.value);
-            }
-        });
-
-        return {
-            sql: `INSERT INTO ${this.props.table} (${cols.join(', ')}) VALUES (${cols.map(item => '?').join(', ')})`,
-            args: args
-        }
-    }
-
-
-    public getDDL(): Array<string> {
-        let ddl = [];
-
-        ddl.push(`CREATE TABLE IF NOT EXISTS ${this.props.table} (
+    ddl.push(`CREATE TABLE IF NOT EXISTS ${this.props.table} (
             ${this.mapColumns()}
-        );`)
+        );`);
 
-        return ddl
-    }
+    return ddl;
+  }
 }

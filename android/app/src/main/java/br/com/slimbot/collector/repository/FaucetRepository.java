@@ -75,7 +75,7 @@ public class FaucetRepository extends AbstractRepository {
 
     public List<FaucetProjection> obterFaucetExecucao() {
 
-        List<Object[]> tupla = super.executeQuery("select faucet.id_faucet, carteira.tx_descricao, carteira.tx_host, usuario.tx_email, usuario.tx_senha, faucet.dt_proximaexecucao, faucet.vl_saldoatual from tb_faucet faucet inner join tb_usuario usuario on faucet.cd_usuario=usuario.id_usuario inner join tb_carteira carteira on faucet.cd_carteira=carteira.id_carteira where faucet.fl_ativo=true order by faucet.dt_proximaexecucao asc");
+        List<Object[]> tupla = super.executeQuery("select faucet.id_faucet, carteira.tx_descricao, carteira.tx_host, usuario.tx_email, usuario.tx_senha, faucet.dt_proximaexecucao, faucet.vl_saldoatual from tb_faucet faucet inner join tb_usuario usuario on faucet.cd_usuario=usuario.id_usuario inner join tb_carteira carteira on faucet.cd_carteira=carteira.id_carteira where faucet.fl_ativo=1 order by faucet.dt_proximaexecucao asc");
         List<FaucetProjection> faucetProjections = new ArrayList<>();
 
         if (tupla.isEmpty()) {
@@ -102,7 +102,7 @@ public class FaucetRepository extends AbstractRepository {
 
     public FaucetProjection obterFaucet(Integer codigoFaucet) {
 
-        List<Object[]> tupla = super.executeQuery("select faucet.id_faucet, carteira.tx_descricao, carteira.tx_host, usuario.tx_email, usuario.tx_senha, faucet.dt_proximaexecucao, faucet.vl_saldoatual from tb_faucet faucet inner join tb_usuario usuario on faucet.cd_usuario=usuario.id_usuario inner join tb_carteira carteira on faucet.cd_carteira=carteira.id_carteira where faucet.fl_ativo=true and faucet.id_faucet=" + codigoFaucet);
+        List<Object[]> tupla = super.executeQuery("select faucet.id_faucet, carteira.tx_descricao, carteira.tx_host, usuario.tx_email, usuario.tx_senha, faucet.dt_proximaexecucao, faucet.vl_saldoatual from tb_faucet faucet inner join tb_usuario usuario on faucet.cd_usuario=usuario.id_usuario inner join tb_carteira carteira on faucet.cd_carteira=carteira.id_carteira where faucet.fl_ativo=1 and faucet.id_faucet=" + codigoFaucet);
 
         if (tupla.isEmpty()) {
             return null;

@@ -10,6 +10,7 @@ export interface IFaucetCarteiraProps {
     proximaExecucao: string;
     saldoAtual: number;
     percentual: number;
+    coletasEstimadas: number;
 }
 
 export interface IFaucetProps {

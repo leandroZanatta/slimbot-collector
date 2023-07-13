@@ -1,48 +1,62 @@
 import { arrayToMap } from "../../../utilitarios/ArrayToMap";
 import { DBTypes } from "../../types/DBTypes";
 
-import { IMetadataProps } from '../../types/RepositoryTypes';
+import { IMetadataProps } from "../../types/RepositoryTypes";
 
 export interface IUsuarioProps {
-    id: number;
-    descricao: string;
-    email: string;
-    senha: string;
-    principal: string;
+  id: number;
+  descricao: string;
+  email: string;
+  senha: string;
+  principal: string;
+  refer: string;
 }
 
 export const usuarioMetaData: IMetadataProps = {
-    table: "tb_usuario",
-    idProp: 'id',
-    columns: arrayToMap('alias', [{
-        alias: 'id',
-        name: 'id_usuario',
-        field: DBTypes.INTEGERPKAI,
-        value: null,
-        notNull: true
-    }, {
-        alias: 'descricao',
-        name: 'tx_descricao',
-        field: DBTypes.VARCHAR_100,
-        value: null,
-        notNull: true
-    }, {
-        alias: 'email',
-        name: 'tx_email',
-        field: DBTypes.VARCHAR_100,
-        value: null,
-        notNull: true
-    }, {
-        alias: 'senha',
-        name: 'tx_senha',
-        field: DBTypes.VARCHAR_100,
-        value: null,
-        notNull: true
-    }, {
-        alias: 'principal',
-        name: 'tx_principal',
-        field: DBTypes.VARCHAR_1,
-        value: null,
-        notNull: true
-    }])
-}
+  table: "tb_usuario",
+  idProp: "id",
+  columns: arrayToMap("alias", [
+    {
+      alias: "id",
+      name: "id_usuario",
+      field: DBTypes.INTEGERPKAI,
+      value: null,
+      notNull: true,
+    },
+    {
+      alias: "descricao",
+      name: "tx_descricao",
+      field: DBTypes.VARCHAR_100,
+      value: null,
+      notNull: true,
+    },
+    {
+      alias: "email",
+      name: "tx_email",
+      field: DBTypes.VARCHAR_100,
+      value: null,
+      notNull: true,
+    },
+    {
+      alias: "senha",
+      name: "tx_senha",
+      field: DBTypes.VARCHAR_100,
+      value: null,
+      notNull: true,
+    },
+    {
+      alias: "principal",
+      name: "tx_principal",
+      field: DBTypes.VARCHAR_1,
+      value: null,
+      notNull: true,
+    },
+    {
+      alias: "refer",
+      name: "tx_refer",
+      field: DBTypes.VARCHAR_500,
+      value: null,
+      notNull: true,
+    },
+  ]),
+};

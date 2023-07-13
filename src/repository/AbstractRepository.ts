@@ -1,149 +1,172 @@
-import { Query, ResultSet, ResultSetError, WebSQLDatabase } from "expo-sqlite/build/SQLite.types";
+import {
+  Query,
+  ResultSet,
+  ResultSetError,
+  WebSQLDatabase,
+} from "expo-sqlite/build/SQLite.types";
 import { MetaData } from "./model/MetaData";
 
-
 export abstract class AbstractRepository<T> {
+  protected db: WebSQLDatabase;
 
-    protected db: WebSQLDatabase;
+  constructor(db: WebSQLDatabase) {
+    this.db = db;
+  }
 
-    constructor(db: WebSQLDatabase) {
-        this.db = db;
-    }
+  public list(data: MetaData<T>): Promise<Array<T>> {
+    return new Promise((resolve, reject) => {
+      this.db.exec([data.getSelect()], false, (error, results) => {
+        if (error) {
+          reject(`Não foi possível salvar o objeto - ${error}`);
 
-    public list(data: MetaData<T>): Promise<Array<T>> {
+          return;
+        }
 
-        return new Promise((resolve, reject) => {
-            this.db.exec([data.getSelect()], false, (error, results) => {
-                if (error) {
-                    reject(`Não foi possível salvar o objeto - ${error}`);
+        if (!results) {
+          reject(`Não foi possível obter resultados`);
 
-                    return;
-                }
+          return;
+        }
 
-                if (!results) {
-                    reject(`Não foi possível obter resultados`);
+        const result = results[0];
 
-                    return;
-                }
+        if (this.isResultSetError(result)) {
+          reject(`Não foi possível obter resultados -${result.error}`);
+          return;
+        }
 
-                const result = results[0];
+        resolve(this.mapResultSet(result));
+      });
+    });
+  }
 
-                if (this.isResultSetError(result)) {
-                    reject(`Não foi possível obter resultados -${result.error}`);
-                    return;
-                }
+  public findFirst(data: MetaData<T>): Promise<T | null> {
+    return new Promise((resolve, reject) => {
+      this.db.exec([data.getSelect()], false, (error, results) => {
+        if (error) {
+          reject(`Não foi possível salvar o objeto - ${error}`);
 
-                resolve(this.mapResultSet(result));
-            }
-            );
-        });
-    }
+          return;
+        }
 
+        if (!results) {
+          reject(`Não foi possível obter resultados`);
 
-    public findFirst(data: MetaData<T>): Promise<T | null> {
+          return;
+        }
 
-        return new Promise((resolve, reject) => {
-            this.db.exec([data.getSelect()], false, (error, results) => {
-                if (error) {
-                    reject(`Não foi possível salvar o objeto - ${error}`);
+        const result = results[0];
 
-                    return;
-                }
+        if (this.isResultSetError(result)) {
+          reject(`Não foi possível obter resultados -${result.error}`);
+          return;
+        }
 
-                if (!results) {
-                    reject(`Não foi possível obter resultados`);
+        if (result.rows.length == 0) {
+          resolve(null);
+        }
 
-                    return;
-                }
+        resolve(this.mapResultSet(result)[0]);
+      });
+    });
+  }
 
-                const result = results[0];
+  protected isResultSetError = (r: any): r is ResultSetError => !!r.error;
 
-                if (this.isResultSetError(result)) {
-                    reject(`Não foi possível obter resultados -${result.error}`);
-                    return;
-                }
+  protected mapResultSet(data: ResultSet): Array<T> {
+    return data.rows.map((item) => item as T);
+  }
 
-                if (result.rows.length == 0) {
-                    resolve(null);
-                }
+  public update(data: MetaData<T>): Promise<T> {
+    return new Promise((resolve, reject) => {
+      this.db.exec([data.getUpdate()], false, (error, results) => {
+        if (error) {
+          reject(`Não foi possível alterar o objeto - ${error}`);
 
-                resolve(this.mapResultSet(result)[0]);
-            }
-            );
-        });
-    }
+          return;
+        }
 
-    protected isResultSetError = (r: any): r is ResultSetError => !!r.error;
+        if (!results) {
+          reject(`Não foi possível obter resultados`);
 
-    protected mapResultSet(data: ResultSet): Array<T> {
-        return data.rows.map(item => item as T)
-    };
+          return;
+        }
 
-    public save(data: MetaData<T>): Promise<T> {
+        const result = results[0];
 
-        return new Promise((resolve, reject) => {
-            this.db.exec([data.getInsert()], false, (error, results) => {
-                if (error) {
-                    reject(`Não foi possível salvar o objeto - ${error}`);
+        if (this.isResultSetError(result)) {
+          reject(`Não foi possível obter resultados -${result.error}`);
 
-                    return;
-                }
+          return;
+        }
 
-                if (!results) {
-                    reject(`Não foi possível obter resultados`);
+        resolve(data.getValues());
+      });
+    });
+  }
 
-                    return;
-                }
+  public save(data: MetaData<T>): Promise<T> {
+    return new Promise((resolve, reject) => {
+      this.db.exec([data.getInsert()], false, (error, results) => {
+        if (error) {
+          reject(`Não foi possível salvar o objeto - ${error}`);
 
-                const result = results[0];
+          return;
+        }
 
-                if (this.isResultSetError(result)) {
-                    reject(`Não foi possível obter resultados -${result.error}`);
+        if (!results) {
+          reject(`Não foi possível obter resultados`);
 
-                    return;
-                }
+          return;
+        }
 
-                data.setId(result.insertId);
+        const result = results[0];
 
-                resolve(data.getValues());
-            }
-            );
-        });
-    }
+        if (this.isResultSetError(result)) {
+          reject(`Não foi possível obter resultados -${result.error}`);
 
-    public executeUpdate(sql: Array<string>): Promise<any> {
+          return;
+        }
 
-        return this.doUpdate(sql.map(item => { return { sql: item, args: [] } }));
-    }
+        data.setId(result.insertId);
 
-    public doUpdate(sqls: Array<Query>): Promise<any> {
+        resolve(data.getValues());
+      });
+    });
+  }
 
-        return new Promise((resolve, reject) => {
-            this.db.exec(sqls, false, (error, results) => {
-                if (error) {
-                    reject(`Não foi possível executar a query - ${error}`);
+  public executeUpdate(sql: Array<string>): Promise<any> {
+    return this.doUpdate(
+      sql.map((item) => {
+        return { sql: item, args: [] };
+      })
+    );
+  }
 
-                    return;
-                }
+  public doUpdate(sqls: Array<Query>): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.db.exec(sqls, false, (error, results) => {
+        if (error) {
+          reject(`Não foi possível executar a query - ${error}`);
 
-                if (!results) {
-                    reject(`Não foi possível obter resultados`);
+          return;
+        }
 
-                    return;
-                }
+        if (!results) {
+          reject(`Não foi possível obter resultados`);
 
-                const result = results[0];
+          return;
+        }
 
-                if (this.isResultSetError(result)) {
-                    reject(`Não foi possível obter resultados -${result.error}`);
-                    return;
-                }
+        const result = results[0];
 
-                resolve(results[0]);
-            }
-            );
-        });
-    }
+        if (this.isResultSetError(result)) {
+          reject(`Não foi possível obter resultados -${result.error}`);
+          return;
+        }
 
-
+        resolve(results[0]);
+      });
+    });
+  }
 }
